@@ -16,9 +16,9 @@ thread = None
 
 def background_thread():
     while True:
-        time.sleep(1)
+        time.sleep(5)
         socketio.emit('my response',
-                      {'data' : 'Server generated event', 'num' : randint(5,10)},
+                      {'data' : 'Server generated event', 'num' : randint(90,100)},
                       namespace='/test')
 
 @app.route("/")

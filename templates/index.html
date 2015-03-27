@@ -1,20 +1,61 @@
 <!DOCTYPE HTML>
 <head>
-  <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
-  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
-  <script type="text/javascript" charset="utf-8">
-    $(document).ready(function(){
-      namespace = '/test';
-      var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
-      socket.on('connect', function(){
-        socket.emit('my event', {data: 'I\'m connected!'});
-      });
-      socket.on('my response', function(msg){
-        console.log(msg);
-      });
+<script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='Chart.min.js') }}"></script>
+<script type="text/javascript" charset="utf-8">
+$(document).ready(function(){
+    var count = 0;
+    var data = {
+        labels: [],
+        datasets: [
+            {
+                label: "Blood Oxygen Level",
+                fillColor: "rgba(151,187,205,0)",
+                strokeColor: "rgba(151,187,205,1)",
+                pointColor: "rgba(151,187,205,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(151,187,205,1)",
+                data: []
+            }
+        ]
+    };
+
+    var ctx = $('#chart').get(0).getContext('2d')
+    var myChart = new Chart(ctx).Line(data, {
+        scaleBeginAtZero: true
     });
-  </script>
+
+    namespace = '/test';
+    var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+    socket.on('connect', function(){
+        socket.emit('my event', {data: 'I\'m connected!'});
+    });
+    socket.on('my response', function(msg){
+        if(msg['num'] != undefined){
+            var d = new Date();
+            var hours = d.getHours() % 12;
+            var ampm = hours >= 12 ? 'pm' : 'am';
+            var minutes = d.getMinutes();
+            minutes = minutes < 10 ? '0' + minutes : minutes
+            var seconds = d.getSeconds();
+            seconds = seconds < 10 ? '0' + seconds : seconds
+            var time = hours + ":" + minutes + "." + seconds + " " + ampm;
+            myChart.addData([msg['num']], time);
+            if(count >= 10){
+                myChart.removeData();
+            }else{
+                count++;
+            }
+            myChart.update();
+        }
+    });
+});
+</script>
 </head>
 <body>
-  <h3>HELLO WORLD!!</h3>
+    <h3>Blood Oxygen Saturation</h3>
+    <canvas id="chart" width="500" height="500"></canvas>
+    <input type="text" name="lname"><br>
 </body>
