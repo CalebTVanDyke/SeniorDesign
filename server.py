@@ -2,6 +2,8 @@ from gevent import monkey
 monkey.patch_all()
 
 import time
+import serial
+import struct
 from flask import Flask, render_template
 from flask.ext.socketio import SocketIO, emit
 from threading import Thread
@@ -12,21 +14,25 @@ app.debug = True;
 app.config['SECRET_KEY'] = 'secret!'
 app.config['PROPAGATE_EXCEPTIONS'] = True
 socketio = SocketIO(app)
-thread = None
+oxygenThread = None
 
-def background_thread():
+
+def oxygen_thread():
+    ser = serial.Serial('COM4', 9600, timeout=1)
     while True:
-        time.sleep(5)
+        time.sleep(1)
+        x = ser.read(1)
+        val = struct.unpack('B', x)[0]
         socketio.emit('my response',
-                      {'data' : 'Server generated event', 'num' : randint(90,100)},
+                      {'data' : 'Server generated event', 'num' : val},
                       namespace='/test')
 
 @app.route("/")
 def index():
-    global thread
-    if thread is None:
-        thread = Thread(target=background_thread)
-        thread.start()
+    global oxygenThread
+    if oxygenThread is None:
+        oxygenThread = Thread(target=oxygen_thread)
+        oxygenThread.start()
     return render_template('index.html')
 
 @socketio.on('connect', namespace='/test')
