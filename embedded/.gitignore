@@ -1,0 +1,5 @@
+genore everything in this directory
+*
+# Except this file
+!.gitignore
+# This can be removed once files have been added
