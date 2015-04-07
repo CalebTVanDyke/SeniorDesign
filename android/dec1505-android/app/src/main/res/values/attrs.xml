@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="StyledTextView">
+        <attr name="font" format="string"/>
+    </declare-styleable>
+
+    <declare-styleable name="TODORatioLayout">
+        <attr name="ratio" format="string"/>
+        <attr name="widthBasedRatio" format="boolean"/>
+    </declare-styleable>
+
+</resources>
