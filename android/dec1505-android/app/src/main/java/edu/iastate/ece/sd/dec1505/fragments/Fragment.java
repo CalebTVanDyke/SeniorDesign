@@ -3,19 +3,17 @@ package edu.iastate.ece.sd.dec1505.fragments;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import edu.iastate.ece.sd.dec1505.R;
 
-public class HomeFragment extends ApplicationFragment {
+public class Fragment extends ApplicationFragment {
 
     @Override
     public int getRootViewId() {return R.layout.fragment_home;}
 
     @Override
     public void onConnectViews() {
-        TextView hometv = (TextView) findViewById(R.id.home_text_view);
-        hometv.setText("Welcome!\nSelect an item from the slide out menu to begin.");
+
     }
 
     @Override
