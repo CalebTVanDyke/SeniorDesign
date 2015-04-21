@@ -4,7 +4,7 @@ android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
     defaultConfig {
-        applicationId 'com.example.blank'
+        applicationId 'edu.iastate.ece.sd.dec1505'
         minSdkVersion 15
         targetSdkVersion 21
         versionCode 1
