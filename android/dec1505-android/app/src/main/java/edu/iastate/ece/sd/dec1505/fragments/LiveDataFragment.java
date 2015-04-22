@@ -33,7 +33,7 @@ public class LiveDataFragment extends ApplicationFragment implements Runnable{
     TextView tempView;
     String WEB_SOCKET_ADDRESS = "";
     String TEST_DATA_URL =  "http://dec1505.sd.ece.iastate.edu/assets/php/rand_data_test.php";
-    String ALERT_URL =      "http://dec1505.sd.ece.iastate.edu/assets/php/alert.php";
+    String ALERT_URL =      "http://arlenburroughs.com/extras/php_jobs/alert.php";
 
     Handler intervalTimer;
     int INTERVAL_TIME = 2000;
