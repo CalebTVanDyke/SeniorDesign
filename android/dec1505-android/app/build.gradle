@@ -4,7 +4,7 @@ android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
     defaultConfig {
-        applicationId 'com.example.blank'
+        applicationId 'edu.iastate.ece.sd.dec1505'
         minSdkVersion 15
         targetSdkVersion 21
         versionCode 1
@@ -26,4 +26,5 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:21.0.0'
     compile 'com.android.support:cardview-v7:21.0.0'
     compile 'com.mcxiaoke.volley:library-aar:1.0.0'
+    compile "org.java-websocket:Java-WebSocket:1.3.0"
 }
