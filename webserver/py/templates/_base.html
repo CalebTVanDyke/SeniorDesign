@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" class="max-height">
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+{% block scripts %}{% endblock %}
+<title>SIDS Alert Device</title>
+</head>
+<body class="max-height">
+    <div class="container-fluid max-height">
+        <div class="row">
+            <nav class="navbar navbar-default navbar-fixed-top">
+              <div class="container-fluid">
+                <div class="navbar-header">
+                  <a class="navbar-brand" href="#">
+                    <a class="navbar-brand" href="#">SIDS Alert Device</a>
+                  </a>
+                </div>
+                {% block nav_right %}{% endblock %}
+              </div>
+            </nav>
+        </div>
+        <div class="row max-height">
+            <div class="col-md-2 side-bar max-height">
+                {% block sidebar %}{% endblock %}
+            </div>
+            <div class="col-md-10 content max-height">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

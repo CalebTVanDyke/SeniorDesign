@@ -1,0 +1,26 @@
+{% extends "_base.html" %}
+
+{% block nav_right %}
+<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+	<ul class="nav navbar-nav navbar-right">
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{user}} <span class="caret"></span></a>
+			<ul class="dropdown-menu">
+				<li><a href="{{ url_for('logout') }}">Logout</a></li>
+				<li><a href="{{ url_for('settings') }}">Settings</a></li>
+			</ul>
+		</li>
+	</ul>
+</div>
+{% endblock %}
+
+{% block sidebar %}
+
+<ul class="nav nav-pills nav-stacked">
+	<li role="presentation" class="{{about}}"><a href="{{ url_for('about') }}">About</a></li>
+	<li role="presentation" class="{{liveData}}"><a class="{{liveData}}" href="{{ url_for('liveData') }}">Live Data</a></li>
+	<li role="presentation" class="{{pastData}}"><a href="{{ url_for('pastData') }}">Past Data</a></li>
+	<li role="presentation" class="{{settings}}"><a href="{{ url_for('settings') }}">Settings</a></li>
+</ul>
+
+{% endblock %}
