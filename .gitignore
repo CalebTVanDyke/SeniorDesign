@@ -1,0 +1,6 @@
+.gradle
+android/dec1505-android/.idea/
+/local.properties
+.DS_Store
+android/dec1505-android/build
+android/dec1505-android/.idea/compiler.xml
