@@ -4,12 +4,13 @@ monkey.patch_all()
 import time
 import serial
 import struct
-from flask import Flask, flash, redirect, url_for, session, render_template, request, session
+from flask import Flask, flash, redirect, url_for, session, render_template, request, session, jsonify
 from flask.ext.socketio import SocketIO, emit
 from threading import Thread
 from random import randint
 from forms import LoginForm, RegisterForm
-from SqlConnect import MySqlConnection
+from db_conn import DbRequest
+from date_utils import DateUtils
 
 app = Flask(__name__)
 app.debug = True;
@@ -18,7 +19,7 @@ app.config['PROPAGATE_EXCEPTIONS'] = True
 socketio = SocketIO(app)
 oxygenThread = None 
 heartThread = None
-db = MySqlConnection()
+db = DbRequest()
 
 LIVE_DATA = "liveData"
 LOGIN = "login"
@@ -27,6 +28,9 @@ ABOUT = "about"
 PAST_DATA = "pastData"
 SETTINGS = "settings"
 LOGOUT = "logout"
+GET_DAY_DATA = "getDayData"
+GET_DATE_RANGE_DATA = "getDateRangeData"
+
 
 @app.route("/")
 def default():
@@ -41,7 +45,6 @@ def login():
         if form.validate(db) == False:
             flash('Username and password did not match.')
         else:
-            session['username'] = form.username.data
             return redirect(url_for(ABOUT))
     return render_template(LOGIN + '.html', form=form)
 
@@ -57,6 +60,7 @@ def register():
 @app.route("/" + LOGOUT)
 def logout():
     session['username'] = None
+    session['user_id'] = None
     return redirect(url_for(LOGIN))
 
 @app.route("/" + ABOUT)
@@ -69,13 +73,26 @@ def about():
 def pastData():
     if 'username' not in session or session['username'] == None:
         return redirect(url_for(LOGIN))
-    return render_template(PAST_DATA + '.html', pastData="active", user=session['username'])
+    return render_template(PAST_DATA + '.html', 
+        pastData="active", user=session['username'], 
+        dates=DateUtils.GetAvailableDates(db, session['user_id']))
 
 @app.route("/" + SETTINGS)
 def settings():
     if 'username' not in session or session['username'] == None:
         return redirect(url_for(LOGIN))
     return render_template(SETTINGS + '.html', settings="active", user=session['username'])
+
+@app.route("/" + GET_DAY_DATA)
+def getDayData():
+    myDict = DateUtils.GetDataForDay(db, request.args.get('date'), session['user_id'], int(request.args.get('dataGap')))
+    return jsonify(**myDict)
+
+@app.route("/" + GET_DATE_RANGE_DATA)
+def getDateRangeData():
+    myDict = DateUtils.GetDataDateRange(db, request.args.get('startDate'),
+        request.args.get('endDate'), session['user_id'],  int(request.args.get('dataGap')))
+    return jsonify(**myDict)
 
 @app.route("/" + LIVE_DATA)
 def liveData():

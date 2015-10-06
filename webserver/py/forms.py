@@ -4,6 +4,7 @@ from SqlConnect import MySqlConnection
 import hashlib
 import random
 import string
+from flask import session
 
 SECRET = 'MyLittleSecret'
 
@@ -15,14 +16,15 @@ class LoginForm(Form):
         rv = Form.validate(self)
         if not rv:
             return False
-        cmd = "SELECT passwordhash FROM user WHERE username=\'{0}\';".format(self.username.data)
-        result = db.execute(cmd)
+        cmd = "SELECT password_hash, id FROM `users` WHERE username=\'{0}\';".format(self.username.data)
+        result = db.query(cmd)
         if result == None:
             return False
-        info = result.fetchone()
-        if info == None:
-            return False
-        return valid_pw(self.username.data, self.password.data, info[0])
+        if valid_pw(self.username.data, self.password.data, result[0]['password_hash']):
+            session["user_id"] = result[0]['id']
+            session["username"] = self.username.data
+            return True
+        return False
 
 class RegisterForm(Form):
     username = TextField('Username', [validators.Required()])
@@ -41,14 +43,13 @@ class RegisterForm(Form):
         if not rv:
             return False
         else:
-            cmd = "SELECT username FROM user WHERE username=\'" + self.username.data + "\';"
-            cur = db.execute(cmd)
+            cmd = "SELECT username FROM `users` WHERE username=\'" + self.username.data + "\';"
+            cur = db.query(cmd)
             if cur == None:
                 passHash = make_pw_hash(self.username.data, self.password.data)
-                cmd = """INSERT INTO user (username, passwordhash, email, phone) VALUES ('{0}','{1}','{2}','{3}')""" \
+                cmd = """INSERT INTO `users` (`username`, `password_hash`, `email`, `phone`) VALUES ('{0}','{1}','{2}','{3}')""" \
                     .format(self.username.data, passHash, self.email.data, self.phone.data)
-                result = db.execute(cmd)
-                db.commit()
+                result = db.query(cmd)
             else:
                 self.username.errors.append('User name is already taken. Please select another.')
                 return False

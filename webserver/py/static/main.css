@@ -17,3 +17,10 @@
 	background-image: linear-gradient(to bottom,#fff 0,#f8f8f8 100%);
 	box-shadow: inset 1px px 0 rgba(255,255,255,.15),0 1px 5px rgba(0,0,0,.075);
 }
+
+.main-content {
+	padding-top: 20px;
+}
+.data-content {
+	padding-top: 10px;
+}
