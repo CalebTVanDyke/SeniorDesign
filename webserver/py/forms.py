@@ -1,6 +1,5 @@
 from flask.ext.wtf import Form
 from wtforms import TextField, PasswordField, validators
-from SqlConnect import MySqlConnection
 import hashlib
 import random
 import string

@@ -17,7 +17,7 @@ app.debug = True;
 app.config['SECRET_KEY'] = 'secret!'
 app.config['PROPAGATE_EXCEPTIONS'] = True
 socketio = SocketIO(app)
-oxygenThread = None 
+oxygenThread = None
 heartThread = None
 db = DbRequest()
 
@@ -37,7 +37,7 @@ def default():
     if 'username' not in session or session['username'] == None:
         return redirect(url_for(LOGIN))
     return redirect(url_for(ABOUT))
- 
+
 @app.route("/" + LOGIN, methods=['GET', 'POST'])
 def login():
     form = LoginForm(request.form)
@@ -54,7 +54,6 @@ def register():
     if request.method == 'POST':
         if form.validate(db):
             return redirect(url_for(LOGIN))
-    print form.errors
     return render_template(REGISTER + '.html', form=form)
 
 @app.route("/" + LOGOUT)
@@ -85,13 +84,19 @@ def settings():
 
 @app.route("/" + GET_DAY_DATA)
 def getDayData():
-    myDict = DateUtils.GetDataForDay(db, request.args.get('date'), session['user_id'], int(request.args.get('dataGap')))
+    user_id = request.args.get('user_id')
+    if user_id == None:
+        user_id = session['user_id']
+    myDict = DateUtils.GetDataForDay(db, request.args.get('date'), user_id, int(request.args.get('dataGap')))
     return jsonify(**myDict)
 
 @app.route("/" + GET_DATE_RANGE_DATA)
 def getDateRangeData():
+    user_id = request.args.get('user_id')
+    if user_id == None:
+        user_id = session['user_id']
     myDict = DateUtils.GetDataDateRange(db, request.args.get('startDate'),
-        request.args.get('endDate'), session['user_id'],  int(request.args.get('dataGap')))
+        request.args.get('endDate'), user_id,  int(request.args.get('dataGap')))
     return jsonify(**myDict)
 
 @app.route("/" + LIVE_DATA)
@@ -140,4 +145,4 @@ def test_disconnect():
     print('Client disconnected')
 
 if __name__ == "__main__":
-    socketio.run(app)
+    socketio.run(app, host='0.0.0.0', port=80)

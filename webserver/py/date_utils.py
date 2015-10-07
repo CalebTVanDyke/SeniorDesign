@@ -1,5 +1,6 @@
 from db_conn import DbRequest
 import datetime
+import time
 
 class DateUtils:
 
@@ -30,16 +31,7 @@ class DateUtils:
 		result = db.query(cmd)
 		if result == None:
 			return dateRangeNoData.format(startDate, endDate)
-
-		heartRate = []
-		temp = []
-		bloodOxygen = []
-		for item in result:
-			heartRate.append({'time': item['time'], 'heart_rate': item['heart_rate']})
-			temp.append({'time': item['time'], 'temp': item['temp']})
-			bloodOxygen.append({'time': item['time'], 'blood_oxygen': item['blood_oxygen']})
-		data = {'heart_rate' : heartRate, 'temp' : temp, 'blood_oxygen' : bloodOxygen}
-		return data
+		return applyDataFrequency(result, dataGap)
 		
 def applyDataFrequency(result, dataGap):
 	lastTime = 0
@@ -47,7 +39,7 @@ def applyDataFrequency(result, dataGap):
 	temp = []
 	bloodOxygen = []
 	for item in result:
-		dt = int(datetime.datetime.strptime(item['time'], "%Y-%m-%d %H:%M:%S").strftime("%s")) 
+		dt = time.mktime(datetime.datetime.strptime(item['time'], "%Y-%m-%d %H:%M:%S").timetuple())
 		if lastTime == 0 or dt - lastTime >= dataGap:
 			heartRate.append({'time': item['time'], 'heart_rate': item['heart_rate']})
 			temp.append({'time': item['time'], 'temp': item['temp']})
