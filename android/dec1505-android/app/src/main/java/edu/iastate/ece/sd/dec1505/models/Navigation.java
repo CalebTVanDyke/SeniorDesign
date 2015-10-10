@@ -2,6 +2,7 @@ package edu.iastate.ece.sd.dec1505.models;
 
 import java.util.LinkedList;
 
+import edu.iastate.ece.sd.dec1505.fragments.HistoryFragment;
 import edu.iastate.ece.sd.dec1505.fragments.HomeFragment;
 import edu.iastate.ece.sd.dec1505.fragments.LiveDataFragment;
 
@@ -16,6 +17,7 @@ public class Navigation {
         // Add fragmentItems here
         add("Home", HomeFragment.class);
         add("Live Data", LiveDataFragment.class);
+        add("History", HistoryFragment.class);
 
         return navigationItems;
     }

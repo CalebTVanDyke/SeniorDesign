@@ -10,4 +10,9 @@
         <attr name="widthBasedRatio" format="boolean"/>
     </declare-styleable>
 
+    <declare-styleable name="HistoryItemView">
+        <attr name="primary_text" format="string" />
+        <attr name="secondary_text" format="string" />
+    </declare-styleable>
+
 </resources>
