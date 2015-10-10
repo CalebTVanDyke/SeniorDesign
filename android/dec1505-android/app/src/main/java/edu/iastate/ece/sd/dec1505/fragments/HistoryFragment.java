@@ -25,6 +25,8 @@ import java.util.ArrayList;
 
 import edu.iastate.ece.sd.dec1505.R;
 import edu.iastate.ece.sd.dec1505.models.Navigation;
+import edu.iastate.ece.sd.dec1505.models.Reading;
+import edu.iastate.ece.sd.dec1505.models.ReadingType;
 import edu.iastate.ece.sd.dec1505.tools.DefaultRequestQueue;
 import edu.iastate.ece.sd.dec1505.views.HistoryItemView;
 
@@ -105,8 +107,9 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
 
         try {
             JSONObject jObj = new JSONObject(data);
-            JSONArray jArr = jObj.getJSONArray("blood_oxygen");
 
+            //Blood Oxygen
+            JSONArray jArr = jObj.getJSONArray("blood_oxygen");
             int bloodOx = -1;
             String time = "";
             Reading tmpReading;
@@ -116,8 +119,35 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
                 time = readJSONObj.getString("time");
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Log.d("History", "At "+time+", SPO2: "+bloodOx);
-                tmpReading = new Reading(ReadingType.BLOOD_OX, bloodOx, time);
+                tmpReading = new Reading(ReadingType.BLOOD_OX, time);
+                tmpReading.setBloodOxygen(bloodOx);
                 readings.add(tmpReading);
+            }
+
+            //Heart Rate
+            jArr = jObj.getJSONArray("heart_rate");
+            int heartRate = -1;
+            for(int i=0; i<jArr.length(); i++){
+                JSONObject readJSONObj = jArr.getJSONObject(i);
+                heartRate = readJSONObj.getInt("heart_rate");
+                time = readJSONObj.getString("time");
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                if(!readings.get(i).getTime().equals(time))Log.e("History","Time Mismatch");
+                readings.get(i).setHeartRate(heartRate);
+            }
+
+            //Body Temp
+            jArr = jObj.getJSONArray("temp");
+            int temp = -1;
+            for(int i=0; i<jArr.length(); i++){
+                JSONObject readJSONObj = jArr.getJSONObject(i);
+                temp = readJSONObj.getInt("temp");
+                time = readJSONObj.getString("time");
+                if(!readings.get(i).getTime().equals(time)){
+                    Log.e("History","Time Mismatch");
+                    Toast.makeText(rootView.getContext(), "Time Mismatch. Check data", Toast.LENGTH_SHORT).show();
+                }
+                readings.get(i).setBodyTemp(temp);
             }
 
         } catch (Exception e) {e.printStackTrace();}
@@ -150,37 +180,14 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
             HistoryItemView itemView;
             if(recycleView!=null && recycleView instanceof HistoryItemView) itemView = (HistoryItemView) recycleView;
             else itemView = new HistoryItemView(viewGroup.getContext());
-
-            itemView.reset();
+            
             Reading toView = readings.get(i);
-            itemView.setPrimaryText(toView.time);
-            itemView.setSecondaryText(""+toView.blooxOx);
+            itemView.setTimeText(toView.getTime());
+            itemView.setBloodOxyView(""+toView.getBlooxOxygen());
+            itemView.setHeartView(""+toView.getHeartRate());
+            itemView.setTempView(""+toView.getTemp());
 
             return itemView;
-        }
-    }
-
-
-
-
-
-    //////////////////////
-    // Modeling
-
-    enum ReadingType{
-        BLOOD_OX,HEART_RATE,TEMP;
-    }
-
-    class Reading{
-        int blooxOx;
-        int heart;
-        int temp;
-        String time;
-        public Reading(ReadingType type, int value, String timeVal) {
-            if(type==ReadingType.BLOOD_OX)blooxOx=value;
-            else if(type==ReadingType.HEART_RATE)heart=value;
-            else if(type==ReadingType.TEMP)temp=value;
-            time = timeVal;
         }
     }
 }

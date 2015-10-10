@@ -3,76 +3,70 @@
     android:id="@+id/list_item_layout_wrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="@dimen/list_item_height"
     android:background="@drawable/selector_white_list_item"
-    android:orientation="horizontal" >
+    android:minHeight="@dimen/list_item_height"
+    android:orientation="horizontal">
 
-    <ImageView
-        android:id="@+id/list_item_icon"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:paddingLeft="@dimen/padding_large"
-        android:paddingTop="@dimen/padding_large"
-        android:paddingBottom="@dimen/padding_large"
-        android:layout_gravity="center_vertical"
-        android:scaleType="fitCenter"
-        android:visibility="gone" />
-
-    <LinearLayout
-        android:layout_weight="1"
-        android:clickable="false"
+    <RelativeLayout
         android:id="@+id/list_item_text_wrapper"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:layout_height="@dimen/list_item_height_small"
+        android:layout_weight="1"
+        android:clickable="false"
+        android:orientation="vertical">
 
-        <View
-            android:visibility="gone"
-            android:id="@+id/item_top_separator"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@drawable/divider"
-            android:layout_marginLeft="@dimen/padding_large" />
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/time_hist_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_centerHorizontal="true"
+            android:padding="@dimen/padding_medium"
+            android:text="SPO2"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/gray"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/spo2_hist_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_centerHorizontal="true"
             android:paddingLeft="@dimen/padding_large"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:layout_gravity="center_vertical">
+            android:text="SPO2"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/black"
+            android:visibility="visible" />
 
 
-            <TextView
-                android:id="@+id/primary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:id="@+id/heart_hist_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:text="heart rate"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/black"
+            android:visibility="visible" />
 
-            <TextView
-                android:visibility="gone"
-                android:id="@+id/secondary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/gray"
-                android:maxLines="1"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+        <TextView
+            android:id="@+id/temp_hist_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerHorizontal="true"
+            android:paddingRight="@dimen/padding_large"
+            android:text="Temp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/black"
+            android:visibility="visible" />
 
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <ImageView
-        android:id="@+id/icon_right"
-        android:layout_width="@dimen/list_item_height"
-        android:layout_height="@dimen/list_item_height"
-        android:paddingRight="@dimen/padding_large"
-        android:paddingTop="@dimen/padding_large"
-        android:paddingBottom="@dimen/padding_large"
-        android:layout_gravity="center_vertical"
-        android:scaleType="fitCenter"
-        android:visibility="gone"
-        android:layout_alignParentRight="true" />
+    </RelativeLayout>
 
 </LinearLayout>

@@ -25,10 +25,6 @@ public class HistoryItemView extends RelativeLayout {
 
     View root;
     LinearLayout itemLayoutWrapper;
-    TextView primaryText;
-    TextView secondaryText;
-    ImageView leftIcon;
-    ImageView rightIcon;
     View topSeparator;
 
     public HistoryItemView(Context context, boolean clickable) {
@@ -51,10 +47,8 @@ public class HistoryItemView extends RelativeLayout {
             int attr = a.getIndex(i);
             switch (attr) {
                 case R.styleable.HistoryItemView_primary_text:
-                    setPrimaryText(a.getString(attr));
                     break;
                 case R.styleable.HistoryItemView_secondary_text:
-                    setSecondaryText(a.getString(attr));
                     break;
             }
         }
@@ -72,83 +66,37 @@ public class HistoryItemView extends RelativeLayout {
         if (root != null) {
             itemLayoutWrapper = (LinearLayout) root.findViewById(R.id.list_item_layout_wrapper);
             if (!clickable) itemLayoutWrapper.setBackgroundResource(R.color.white);
-            primaryText = (TextView) root.findViewById(R.id.primary);
-            secondaryText = (TextView) root.findViewById(R.id.secondary);
-            leftIcon = (ImageView) root.findViewById(R.id.list_item_icon);
-            rightIcon = (ImageView) root.findViewById(R.id.icon_right);
-            topSeparator = root.findViewById(R.id.item_top_separator);
         }
     }
 
-    public void setPrimaryText(String name) {
-        primaryText.setText(name);
+    public void setTimeText(String timeToShow){
+        TextView tv = (TextView)findViewById(R.id.time_hist_view);
+        tv.setText(timeToShow);
     }
 
-    public String getItemName() {
-        return primaryText.getText().toString();
+    public void setBloodOxyView(String bloodOxyView) {
+        TextView tv = (TextView)findViewById(R.id.spo2_hist_value);
+        tv.setText(bloodOxyView);
     }
+
+
+    public void setHeartView(String heartView) {
+        TextView tv = (TextView)findViewById(R.id.heart_hist_value);
+        tv.setText(heartView);
+    }
+
+    public void setTempView(String tempView) {
+        TextView tv = (TextView)findViewById(R.id.temp_hist_value);
+        tv.setText(tempView);
+    }
+
 
     public void setItemBackgroundColor(int color){
         itemLayoutWrapper.setBackgroundColor(color);
     }
 
-    public void setLeftIcon(int resource) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            leftIcon.setImageDrawable(getContext().getResources().getDrawable(resource, getContext().getTheme()));
-        else
-            leftIcon.setImageDrawable(resize(getContext().getResources().getDrawable(resource)));
-        leftIcon.setVisibility(VISIBLE);
-    }
-
-    public void setRightIcon(int resource) {
-        rightIcon.setImageResource(resource);
-        rightIcon.setVisibility(VISIBLE);
-    }
-
-    public void reset() {
-        secondaryText.setVisibility(GONE);
-        leftIcon.setVisibility(GONE);
-    }
-
-    public void setSecondaryText(String sub) {
-        secondaryText.setVisibility(VISIBLE);
-        secondaryText.setText(sub);
-    }
-
     public void setTopHeaderVisibility(int visibility) {
         topSeparator.setVisibility(visibility);
-    }
-
-    public void setPrimaryColor(int color) {
-        primaryText.setTextColor(getResources().getColor(color));
-    }
-
-    public void setSecondaryColor(int color){
-        secondaryText.setTextColor(getResources().getColor(color));
-    }
-
-    public void setPrimaryTint(int color) {
-        leftIcon.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
-    }
-
-    public void setRightListener(OnClickListener listener) {
-        rightIcon.setOnClickListener(listener);
-    }
-
-    public TextView getSecondaryText(){
-        return secondaryText;
-    }
-
-    public TextView getPrimaryText(){
-        return primaryText;
-    }
-
-    public ImageView getLeftIcon(){
-        return leftIcon;
-    }
-
-    public ImageView getRightIcon(){
-        return rightIcon;
     }
 
     private Drawable resize(Drawable image) {
@@ -156,5 +104,4 @@ public class HistoryItemView extends RelativeLayout {
         Bitmap bitmapResized = Bitmap.createScaledBitmap(b, 50, 50, false);
         return new BitmapDrawable(getResources(), bitmapResized);
     }
-
 }
