@@ -1,5 +1,246 @@
 {% extends "_index.html" %}
 
+{% block scripts %}
+<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-datepicker3.min.css') }}">
+<script src="{{ url_for('static', filename='bootstrap-datepicker.js') }}"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script>
+
+google.load('visualization', '1', {'packages':['corechart', 'annotationchart']});
+
+$(document).ready(function() {
+
+	var progressBar = 	'<div class="progress">' + 
+							'<div class="progress-bar progress-bar-striped active" role="progressbar" ' + 
+							'aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' + 
+								'Loading...' + 
+							'</div>' + 
+						'</div>'
+
+	var singleDate = '<div class="input-group date">' +
+				  		'<input type="text" class="form-control" id="select-date" placeholder="Select Date">' +
+						'<span class="input-group-addon">' +
+				  			'<i class="glyphicon glyphicon-th"></i>' +
+				  		'</span>' +
+					'</div>'
+
+	var dateRange = '<div class="input-daterange input-group" id="datepicker">' +
+    					'<input type="text" class="input-sm form-control" name="start" id="startDate" placeholder="Start Date"/>' +
+    					'<span class="input-group-addon">to</span>' +
+    					'<input type="text" class="input-sm form-control" name="end" id="endDate" placeholder="End Date"/>' +
+					'</div>'
+
+	function loadSingleDay() {
+		$(".progress").show()
+		hideCharts()
+		date = new Date($("#select-date").val())
+		dataGap = $(".data-gap").val()
+		console.log(dataGap)
+		dateStr = date.toISOString().substring(0, 10) 
+		$.ajax({
+			url: "{{url_for('getDayData')}}",
+			data: {'date': dateStr, 'dataGap': dataGap},
+			success: function(result) {
+				drawCharts(result)
+			}
+		})
+	}
+
+	function loadDateRange() {
+		$(".progress").show()
+		hideCharts()
+		startDate = new Date($("#startDate").val())
+		endDate = new Date($("#endDate").val())
+		dataGap = $(".data-gap").val()
+		startDateStr = startDate.toISOString().substring(0, 10) 
+		endDateStr = endDate.toISOString().substring(0, 10) 
+		console.log(startDateStr)
+		console.log(endDateStr)
+		$.ajax({
+			url: "{{url_for('getDateRangeData')}}",
+			data: {'startDate': startDateStr, 'endDate': endDateStr, 'dataGap': dataGap},
+			success: function(result) {
+				console.log(result)
+				drawCharts(result)
+			}
+		})
+	}
+
+	function initSingleDate() {
+		$('#date-container input').datepicker({
+			autoclose: true,
+			beforeShowDay: function (date){
+				return $.inArray(date.getTime(), dates) != -1
+			}
+		});
+	} 
+
+	function initDateRange() {
+		$('#date-container .input-daterange').datepicker({
+			autoclose: true,
+			beforeShowDay: function (date){
+				return $.inArray(date.getTime(), dates) != -1
+			},
+		});
+	}
+
+	function hideCharts() {
+		$("#heart_chart").html("")
+		$("#blood_chart").html("")
+		$("#temp_chart").html("")
+	}
+
+	function drawCharts(results) {
+		$(".progress").hide()
+		var heartRate = new google.visualization.DataTable();
+		heartRate.addColumn('datetime', 'Time')
+		heartRate.addColumn('number', 'Heart Rate')
+
+		var temp = new google.visualization.DataTable();
+		temp.addColumn('datetime', 'Time')
+		temp.addColumn('number', 'Temperature')
+
+		var oxygen = new google.visualization.DataTable();
+		oxygen.addColumn('datetime', 'Time')
+		oxygen.addColumn('number', 'Blood Oxygen Saturation')
+
+		heartData = results['heart_rate'];
+		oxygenData = results['blood_oxygen'];
+		tempData = results['temp']
+
+		for (var i = 0; i < heartData.length; i++) {
+			data = parseFloat(heartData[i]['heart_rate'])
+			time = new Date(heartData[i]['time'])
+			heartRate.addRow([time, data])
+		}
+
+		for (var i = 0; i < oxygenData.length; i++) {
+			data = parseFloat(oxygenData[i]['blood_oxygen'])
+			time = new Date(oxygenData[i]['time'])
+			oxygen.addRow([time, data])
+		}
+
+		for (var i = 0; i < tempData.length; i++) {
+			data = parseFloat(tempData[i]['temp'])
+			time = new Date(tempData[i]['time'])
+			temp.addRow([time, data])
+		}
+
+		var heartOptions = {'title':'Heart Rate',
+				'pointSize': 1,
+                'width' : 900,
+                'height' : 200,
+                'vAxis': {
+                	'maxValue' : 150,
+                	'minValue' : 0
+                },
+                'colors' : ['#B40404'],
+            };
+		var bloodOptions = {'title':'Blood Oxygen Saturation',
+				'pointSize': 1,
+                'width' : 900,
+                'height' : 200,
+                'vAxis': {
+                	'maxValue' : 100,
+                	'minValue' : 0
+                },
+                'colors' : ['#2E9AFE'],
+            };
+		var tempOptions = {'title':'Body Temperature',
+				'pointSize': 1,
+                'width' : 900,
+                'height' : 200,
+                'vAxis': {
+                	'maxValue' : 110,
+                	'minValue' : 0
+                },
+                'colors' : ['#848484'],
+            };
+
+
+
+        var heartChart = new google.visualization.LineChart(document.getElementById('heart_chart'))
+        var bloodChart = new google.visualization.LineChart(document.getElementById('blood_chart'))
+        var tempCart = new google.visualization.LineChart(document.getElementById('temp_chart'))
+        heartChart.draw(heartRate, heartOptions);
+        bloodChart.draw(oxygen, bloodOptions);
+        tempCart.draw(temp, tempOptions);
+	}
+
+	$(".progress").hide()
+	dateStr = {{dates|safe}}
+	dates = new Array()
+	for (var i = 0; i < dateStr.length; i++) {
+		var date = new Date(dateStr[i])
+		date.setHours(0)
+		date.setMinutes(0)
+		date.setSeconds(0)
+		dates.push(date.getTime())
+	}
+	initSingleDate()
+
+    $(".date-selector.singleDate").on("click", function(){
+    	$("#date-container").html(singleDate)
+    	initSingleDate()
+    	$(".date-selector.active").removeClass("active")
+    	$(".singleDate").addClass("active")
+    	$(".submit").unbind('click').click(loadSingleDay)
+    	hideCharts()
+    })
+    $(".date-selector.dateRange").on("click", function(){
+		$("#date-container").html(dateRange)
+		initDateRange()
+		$(".date-selector.active").removeClass("active")
+    	$(".dateRange").addClass("active")
+    	$(".submit").unbind('click').click(loadDateRange)
+    	hideCharts()
+    })
+    $(".submit").click(loadSingleDay)
+})
+</script>
+{% endblock %}
+
 {% block content %}
-	<h3>Past Data</h3>
+	<div class="row">
+		<div class="col-md-12">
+			<ul class="nav nav-tabs date-selector">
+		        <li role="presentation" class="active date-selector singleDate"><a href="#">Single Day</a></li>
+				<li role="presentation" class="date-selector dateRange"><a href="#">Date Range</a></li>
+		    </ul>		
+		</div>
+	</div>
+	<div class="main-content">
+		<div class="row">
+			<div class="col-md-5">
+				<form>
+					<div class="form-group" id="date-container">
+				  		<input type="text" class="form-control" id="select-date" placeholder="Select Date">
+					</div>
+					<div class="form-group">
+						<select class="data-gap" value="60">
+							<option value="60">One Minute</option>
+							<option value="300">Five Minute</option>
+							<option value="600">Ten Minute</option>
+							<option value="1800">Half Hour</option>
+							<option value="3600">One Hour</option>
+						</select>
+					</div>
+				</form>
+			</div>
+		</div>
+		<button type="button" class="btn btn-primary submit" style="margin-top: 10px;">Load Data</button>
+		<div class="row">
+			<div class="col-md-12 data-content">
+				<div class="progress">
+					<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+						Loading...
+					</div>
+				</div>
+				<div id="heart_chart" style="width: 900px; height: 200px;"></div>
+				<div id="blood_chart" style="width: 900px; height: 200px;"></div>
+				<div id="temp_chart" style="width: 900px; height: 200px;"></div>
+			</div>
+		</div>
+	</div>
+
 {% endblock %}
