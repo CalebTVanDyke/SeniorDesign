@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginTop="@dimen/abc_action_bar_default_height_material">
+    android:layout_height="match_parent">
 
 
     <ProgressBar
@@ -14,9 +13,16 @@
         android:id="@+id/history_loading"
         android:layout_gravity="center" />
 
+    <edu.iastate.ece.sd.dec1505.views.HistoryItemListHeader
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/history_labels_header"></edu.iastate.ece.sd.dec1505.views.HistoryItemListHeader>
+
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/history_data_list"></ListView>
+        android:id="@+id/history_data_list"
+        android:fadeScrollbars="false"
+        android:layout_below="@id/history_labels_header"></ListView>
 
 </RelativeLayout>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/list_item_text_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/list_item_height_small"
+        android:layout_weight="1"
+        android:clickable="false"
+        android:orientation="horizontal"
+        android:padding="0dp">
+
+
+        <TextView
+            android:id="@+id/time_header_label"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:padding="@dimen/padding_small"
+            android:text="       Time      "
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/gray"
+            android:textStyle="bold"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/spo2_header_label"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Blood Ox."
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/primary_dark_color"
+            android:textStyle="bold"
+            android:visibility="visible" />
+
+
+        <TextView
+            android:id="@+id/heart_header_label"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Heart Rate"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/primary_dark_color"
+            android:textStyle="bold"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/temp_header_label"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Body Temp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/primary_dark_color"
+            android:textStyle="bold"
+            android:visibility="visible" />
+
+    </LinearLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/divider"></FrameLayout>
+</LinearLayout>

@@ -2,18 +2,10 @@ package edu.iastate.ece.sd.dec1505.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -25,7 +17,6 @@ public class HistoryItemView extends RelativeLayout {
 
     View root;
     LinearLayout itemLayoutWrapper;
-    View topSeparator;
 
     public HistoryItemView(Context context, boolean clickable) {
         super(context);
@@ -46,10 +37,7 @@ public class HistoryItemView extends RelativeLayout {
         for (int i = 0; i < N; ++i) {
             int attr = a.getIndex(i);
             switch (attr) {
-                case R.styleable.HistoryItemView_primary_text:
-                    break;
-                case R.styleable.HistoryItemView_secondary_text:
-                    break;
+
             }
         }
         a.recycle();
@@ -64,44 +52,29 @@ public class HistoryItemView extends RelativeLayout {
     private void sharedConstructor(Context context, boolean clickable) {
         root = LayoutInflater.from(context).inflate(R.layout.view_history_item, this);
         if (root != null) {
-            itemLayoutWrapper = (LinearLayout) root.findViewById(R.id.list_item_layout_wrapper);
-            if (!clickable) itemLayoutWrapper.setBackgroundResource(R.color.white);
+            itemLayoutWrapper = (LinearLayout) root.findViewById(R.id.list_item_text_wrapper);
+            if (!clickable) itemLayoutWrapper.setBackgroundResource(R.color.light_background);
         }
     }
 
     public void setTimeText(String timeToShow){
-        TextView tv = (TextView)findViewById(R.id.time_hist_view);
+        TextView tv = (TextView)findViewById(R.id.time_header_label);
         tv.setText(timeToShow);
     }
 
     public void setBloodOxyView(String bloodOxyView) {
-        TextView tv = (TextView)findViewById(R.id.spo2_hist_value);
+        TextView tv = (TextView)findViewById(R.id.spo2_header_label);
         tv.setText(bloodOxyView);
     }
 
 
     public void setHeartView(String heartView) {
-        TextView tv = (TextView)findViewById(R.id.heart_hist_value);
+        TextView tv = (TextView)findViewById(R.id.heart_header_label);
         tv.setText(heartView);
     }
 
     public void setTempView(String tempView) {
-        TextView tv = (TextView)findViewById(R.id.temp_hist_value);
+        TextView tv = (TextView)findViewById(R.id.temp_header_label);
         tv.setText(tempView);
-    }
-
-
-    public void setItemBackgroundColor(int color){
-        itemLayoutWrapper.setBackgroundColor(color);
-    }
-
-    public void setTopHeaderVisibility(int visibility) {
-        topSeparator.setVisibility(visibility);
-    }
-
-    private Drawable resize(Drawable image) {
-        Bitmap b = ((BitmapDrawable)image).getBitmap();
-        Bitmap bitmapResized = Bitmap.createScaledBitmap(b, 50, 50, false);
-        return new BitmapDrawable(getResources(), bitmapResized);
     }
 }

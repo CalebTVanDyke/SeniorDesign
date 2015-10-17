@@ -15,9 +15,10 @@ public class Navigation {
         navigationItems = new LinkedList<NavigationItem>();
 
         // Add fragmentItems here
+        add("History", HistoryFragment.class);
         add("Home", HomeFragment.class);
         add("Live Data", LiveDataFragment.class);
-        add("History", HistoryFragment.class);
+
 
         return navigationItems;
     }

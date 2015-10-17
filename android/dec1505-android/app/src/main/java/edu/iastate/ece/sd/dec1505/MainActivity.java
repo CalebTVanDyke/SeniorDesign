@@ -120,11 +120,9 @@ public class MainActivity extends ActionBarActivity{
     }
 
     public void goToFragment(ApplicationFragment fragment,boolean addToBackStack){
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(
-                R.id.content_frame,
-                fragment,
-                fragment.getTitle()
-        );
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.slide_in,R.anim.slide_out);
+        transaction.replace(R.id.content_frame, fragment, fragment.getTitle());
         if(addToBackStack) transaction.addToBackStack(fragment.getTitle());
         transaction.commit();
     }
