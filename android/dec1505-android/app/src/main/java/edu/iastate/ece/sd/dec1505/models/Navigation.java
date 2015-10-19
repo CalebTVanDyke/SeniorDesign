@@ -18,6 +18,7 @@ public class Navigation {
         add("History", HistoryFragment.class);
         add("Home", HomeFragment.class);
         add("Live Data", LiveDataFragment.class);
+        add("Log Out", null);
 
 
         return navigationItems;

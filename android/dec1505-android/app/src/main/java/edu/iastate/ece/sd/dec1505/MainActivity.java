@@ -1,5 +1,7 @@
 package edu.iastate.ece.sd.dec1505;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -20,6 +22,7 @@ import java.util.LinkedList;
 
 import edu.iastate.ece.sd.dec1505.fragments.ApplicationFragment;
 import edu.iastate.ece.sd.dec1505.models.Navigation;
+import edu.iastate.ece.sd.dec1505.tools.Prefs;
 import edu.iastate.ece.sd.dec1505.views.NavigationItemView;
 import edu.iastate.ece.sd.dec1505.views.base.BaseLayout;
 
@@ -156,7 +159,13 @@ public class MainActivity extends ActionBarActivity{
 
         @Override
         public void onClick(View v) {
-            setNavigationItem(navigationItem);
+            if(navigationItem.title.equals("Log Out")){
+                Prefs.put(getContext(), Prefs.loggedIn, false);
+                Intent i = new Intent(getContext(),AuthenticateActivity.class);
+                startActivity(i);
+                finish();
+            }
+            else setNavigationItem(navigationItem);
         }
     }
 
@@ -198,6 +207,10 @@ public class MainActivity extends ActionBarActivity{
             return (Navigation.NavigationItem) getItem(position);
         }
 
+    }
+
+    private Context getContext(){
+        return getApplicationContext();
     }
 
 }

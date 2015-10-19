@@ -5,6 +5,9 @@
     <string name="action_settings">Settings</string>
     <string name="drawer_open">Drawer Open</string>
     <string name="drawer_close">Drawer Closed</string>
+
+    <string name="logged_in">is the user logged in?</string>
+
     <string name="app_descrip">This is an app designed by the dec15-05 group to monitor live device date, as well as view data history.</string>
     <string name="live_data_info">This section of the application allows you to view the data as it is read by the sensors.</string>
     <string name="history_info">This section of the application allows you to view previous readings for a specific time window and of the desired frequency.</string>
