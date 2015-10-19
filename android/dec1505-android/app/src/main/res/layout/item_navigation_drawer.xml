@@ -26,7 +26,7 @@
         android:layout_weight="1"
         android:id="@+id/item_title"
         android:text="Test"
-        android:background="@drawable/selector_white_list_item"/>
+        android:background="@drawable/selector_lightgray_list_item"/>
 
     <ImageView
         android:visibility="gone"
