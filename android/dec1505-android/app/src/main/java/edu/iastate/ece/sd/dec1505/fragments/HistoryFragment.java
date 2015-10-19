@@ -1,5 +1,6 @@
 package edu.iastate.ece.sd.dec1505.fragments;
 
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.support.v4.app.DialogFragment;
 import android.app.TimePickerDialog;
@@ -12,8 +13,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -22,6 +25,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -38,12 +43,27 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
     ListView historyListView;
     HistoryDataAdapter historyDataAdapter;
 
+    TextView fromDate,toDate,fromTime,toTime;
+
 
     @Override
     public int getRootViewId() {return R.layout.fragment_history;}
 
     @Override
     public void onConnectViews() {
+
+        fromDate = (TextView) findViewById(R.id.date_from);
+        toDate = (TextView) findViewById(R.id.date_to);
+        fromDate.setOnClickListener(getDateOnClick(fromDate));
+        toDate.setOnClickListener(getDateOnClick(toDate));
+
+        fromTime = (TextView) findViewById(R.id.time_from);
+        toTime = (TextView) findViewById(R.id.time_to);
+        fromTime.setOnClickListener(getTimeOnClick(fromTime));
+        toTime.setOnClickListener(getTimeOnClick(toTime));
+
+        setCurrentDateTimeValues();
+
         historyListView = (ListView) rootView.findViewById(R.id.history_data_list);
         historyDataAdapter = new HistoryDataAdapter();
         historyListView.setAdapter(historyDataAdapter);
@@ -75,6 +95,40 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
         inflater.inflate(R.menu.menu_info, menu);
+    }
+
+    private void setCurrentDateTimeValues(){
+        final Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        int minute = c.get(Calendar.MINUTE);
+        int amPm = c.get(Calendar.AM_PM);
+        String amOrPm = "AM";
+        if(amPm==1)amOrPm="PM";
+        Log.e("Dec",""+month);
+        month+=1;
+
+        SimpleDateFormat timeFormat,dateFormat;
+        //TODO
+        //sdf = new SimpleDateFormat("HH:mm:ss");//24 hour format
+        timeFormat = new SimpleDateFormat("h:m:ss a");//12 hour format
+        dateFormat = new SimpleDateFormat("M/d/y");
+
+        String printTime="";
+        String printDate="";
+        try{
+            printTime = timeFormat.format(timeFormat.parse(hour-1+":"+minute+":00 "+amOrPm));
+            fromTime.setText(printTime);
+            printTime = timeFormat.format(timeFormat.parse(hour+":"+minute+":00 "+amOrPm));
+            toTime.setText(printTime);
+
+            printDate = dateFormat.format(dateFormat.parse(""+month+"/"+day+"/"+year));
+        }catch(ParseException e){e.printStackTrace();}
+
+        fromDate.setText(printDate);
+        toDate.setText(printDate);
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -118,6 +172,30 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
         historyDataAdapter.notifyDataSetChanged();
     }
 
+    public View.OnClickListener getDateOnClick(final TextView dateTextView) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerFragment dpf = new DatePickerFragment();
+                dpf.setTextView(dateTextView);
+                DialogFragment newFragment = dpf;
+                newFragment.show(getFragmentManager(), "datePicker");
+            }
+        };
+    }
+
+    private View.OnClickListener getTimeOnClick(final TextView timeTextView) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TimePickerFragment tpf = new TimePickerFragment();
+                tpf.setTextView(timeTextView);
+                DialogFragment newFragment = tpf;
+                newFragment.show(getFragmentManager(), "timePicker");
+            }
+        };
+    }
+
     class HistoryDataAdapter extends BaseAdapter{
 
         @Override
@@ -152,7 +230,11 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
         }
     }
 
+    ///////////////////////
+    // Time Picker Dialog
     public static class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
+
+        TextView toUpdate;
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -167,11 +249,38 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
 
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             // Do something with the time chosen by the user
+            toUpdate.setText(hourOfDay+":"+minute);
+        }
+
+        public void setTextView(TextView textView) {
+            toUpdate = textView;
         }
     }
 
-    public void showTimePickerDialog() {
-        DialogFragment newFragment = new TimePickerFragment();
-        newFragment.show(getFragmentManager(), "timePicker");
+    ///////////////////////
+    // Date Picker Dialog
+    public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+
+        TextView toUpdate;
+        public void setTextView(TextView tv){
+            toUpdate = tv;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current date as the default date in the picker
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+
+            // Create a new instance of DatePickerDialog and return it
+            return new DatePickerDialog(getActivity(), this, year, month, day);
+        }
+
+        public void onDateSet(DatePicker view, int year, int month, int day) {
+            // Do something with the date chosen by the user
+            toUpdate.setText(month+1+"/"+day+"/"+year);
+        }
     }
 }

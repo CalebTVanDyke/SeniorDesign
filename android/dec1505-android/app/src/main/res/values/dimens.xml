@@ -21,12 +21,13 @@
     <dimen name="popup_options_height">32dp</dimen>
 
     <dimen name="list_item_height">56dp</dimen>
-    <dimen name="list_item_header_small">32dp</dimen>
-    <dimen name="list_item_header">48dp</dimen>
     <dimen name="list_item_height_small">48dp</dimen>
     <dimen name="list_item_height_medium">64dp</dimen>
     <dimen name="list_item_height_large">72dp</dimen>
     <dimen name="list_item_height_xlarge">100dp</dimen>
     <dimen name="list_item_height_xxlarge">142dp</dimen>
+
+    <dimen name="list_item_header_small">32dp</dimen>
+    <dimen name="list_item_header">48dp</dimen>
 
 </resources>

@@ -13,9 +13,88 @@
         android:id="@+id/history_loading"
         android:layout_gravity="center" />
 
+    <RelativeLayout
+        android:id="@+id/date_window_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/from_to_label_row">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="From:"
+                android:gravity="center"
+                android:layout_weight="1"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="To:"
+                android:gravity="center"
+                android:layout_weight="1"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/date_selection_row"
+            android:layout_below="@+id/from_to_label_row">
+            <TextView
+                android:id="@+id/date_from"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/list_item_header_small"
+                android:text="08/01/2015"
+                android:textColor="@color/primary_dark_color"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:layout_weight="1"
+                android:background="@drawable/selector_white_list_item"/>
+            <TextView
+                android:id="@+id/date_to"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/list_item_header_small"
+                android:text="08/02/2015"
+                android:textColor="@color/primary_dark_color"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:layout_weight="1"
+                android:background="@drawable/selector_white_list_item"/>
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/time_selection_row"
+            android:layout_below="@+id/date_selection_row">
+            <TextView
+                android:id="@+id/time_from"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/list_item_header_small"
+                android:text="9:30pm"
+                android:textColor="@color/primary_dark_color"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:layout_weight="1"
+                android:background="@drawable/selector_white_list_item"/>
+            <TextView
+                android:id="@+id/time_to"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/list_item_header_small"
+                android:text="6:30am"
+                android:textColor="@color/primary_dark_color"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:layout_weight="1"
+                android:background="@drawable/selector_white_list_item"/>
+        </TableRow>
+
+    </RelativeLayout>
+
     <edu.iastate.ece.sd.dec1505.views.HistoryItemListHeader
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/date_window_header"
         android:id="@+id/history_labels_header">
     </edu.iastate.ece.sd.dec1505.views.HistoryItemListHeader>
 
