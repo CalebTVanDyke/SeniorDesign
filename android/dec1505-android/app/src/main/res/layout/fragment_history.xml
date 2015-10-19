@@ -16,7 +16,8 @@
     <edu.iastate.ece.sd.dec1505.views.HistoryItemListHeader
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/history_labels_header"></edu.iastate.ece.sd.dec1505.views.HistoryItemListHeader>
+        android:id="@+id/history_labels_header">
+    </edu.iastate.ece.sd.dec1505.views.HistoryItemListHeader>
 
     <ListView
         android:layout_width="match_parent"
