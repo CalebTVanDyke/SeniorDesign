@@ -6,7 +6,8 @@
     <color name="accent_color">#ff004abf</color>
     <color name="overlay">#88000000</color>
     <color name="dark_overlay">#BB000000</color>
-    <color name="light_background">#dddddd</color>
+    <color name="text_color">#000000</color>
+    <color name="background">#dddddd</color>
 
 
     <color name="white">#FFFFFF</color>

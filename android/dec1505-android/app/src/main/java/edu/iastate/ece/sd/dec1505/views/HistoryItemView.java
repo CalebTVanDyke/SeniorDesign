@@ -53,7 +53,7 @@ public class HistoryItemView extends RelativeLayout {
         root = LayoutInflater.from(context).inflate(R.layout.view_history_item, this);
         if (root != null) {
             itemLayoutWrapper = (LinearLayout) root.findViewById(R.id.list_item_text_wrapper);
-            if (!clickable) itemLayoutWrapper.setBackgroundResource(R.color.light_background);
+            if (!clickable) itemLayoutWrapper.setBackgroundResource(R.color.background);
         }
     }
 

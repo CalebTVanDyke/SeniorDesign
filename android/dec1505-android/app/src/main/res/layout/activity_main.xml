@@ -38,7 +38,7 @@
             android:layout_width="@dimen/abc_panel_menu_list_width"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:background="@android:color/background_light"
+            android:background="@color/background"
             android:choiceMode="singleChoice"
             android:clipToPadding="false"
             android:divider="@android:color/transparent"
