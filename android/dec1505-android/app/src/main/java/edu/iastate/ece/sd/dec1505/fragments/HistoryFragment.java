@@ -66,7 +66,7 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
         fromTime = (TextView) findViewById(R.id.time_from);
         toTime = (TextView) findViewById(R.id.time_to);
         fromTime.setOnClickListener(getTimeOnClick(fromTime,true));
-        toTime.setOnClickListener(getTimeOnClick(toTime,false));
+        toTime.setOnClickListener(getTimeOnClick(toTime, false));
 
         historyListView = (ListView) rootView.findViewById(R.id.history_data_list);
         historyDataAdapter = new HistoryDataAdapter();
@@ -241,7 +241,7 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
 
             try {
                 Date thisTime = twntyFourHrFormat.parse(hourOfDay+":"+minute);
-                Log.e("","");
+                Log.e("", "");
                 toUpdate.setText(timeFormat.format(thisTime));
             }catch(ParseException e){e.printStackTrace();}
             validateTimeWindow(isFrom);
@@ -285,11 +285,12 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
         }
     }
 
-    private static void validateTimeWindow(boolean isFrom){
+    private static void validateTimeWindow(boolean isFromSide){
         try{
 
+            //validate dates
             Date thisDate,otherDate;
-            if(isFrom){
+            if(isFromSide){
                 thisDate = dateFormat.parse(fromDate.getText().toString());
                 otherDate = dateFormat.parse(toDate.getText().toString());
                 if(thisDate.getTime()>otherDate.getTime())toDate.setText(dateFormat.format(thisDate));
@@ -300,22 +301,22 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
                 if(thisDate.getTime()<otherDate.getTime())fromDate.setText(dateFormat.format(thisDate));
             }
 
-            //if dates are the same
-            Date left = dateFormat.parse(fromDate.getText().toString());
-            Date right = dateFormat.parse(toDate.getText().toString());
+            //validate times
+            Date leftDate = dateFormat.parse(fromDate.getText().toString());
+            Date rightDate = dateFormat.parse(toDate.getText().toString());
             Date otherTime;
-            if(left.getTime()>=right.getTime()){
+            if(leftDate.getTime()>=rightDate.getTime()){
                 Date thisTime;
-                if(isFrom){
+                if(isFromSide){
                     thisTime = timeFormat.parse(fromTime.getText().toString());
-                    otherTime = twntyFourHrFormat.parse(toTime.getText().toString());
+                    otherTime = timeFormat.parse(toTime.getText().toString());
                     if(thisTime.getTime()>otherTime.getTime()){
                         toTime.setText(timeFormat.format(thisTime));
                     }
                 }
                 else{
                     thisTime = timeFormat.parse(toTime.getText().toString());
-                    otherTime = twntyFourHrFormat.parse(fromTime.getText().toString());
+                    otherTime = timeFormat.parse(fromTime.getText().toString());
                     if(thisTime.getTime()<otherTime.getTime()){
                         fromTime.setText(timeFormat.format(thisTime));
                     }
