@@ -8,6 +8,7 @@
         <item name="colorAccent">@color/accent_color</item>
         <item name="android:textColor">@color/text_color</item>
         <item name="android:colorBackground">@color/background</item>
+        <item name="android:fastScrollThumbDrawable">@drawable/fast_scroll_thumb</item>
     </style>
 
     <style name="AppTheme" parent="BaseAppTheme">

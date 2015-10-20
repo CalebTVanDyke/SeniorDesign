@@ -229,9 +229,15 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Use the current time as the default values for the picker
+            Date toDisplay=null;
+            try{
+                toDisplay = timeFormat.parse(toTime.getText().toString());
+                if(isFrom) toDisplay = timeFormat.parse(fromTime.getText().toString());
+            }catch(ParseException e){}
             final Calendar c = Calendar.getInstance();
+            c.setTime(toDisplay);
             int hour = c.get(Calendar.HOUR_OF_DAY);
-            int minute = 0;//c.get(Calendar.MINUTE);
+            int minute = c.get(Calendar.MINUTE);
 
             // Create a new instance of TimePickerDialog and return it
             return new TimePickerDialog(getActivity(), this, hour, minute, DateFormat.is24HourFormat(getActivity()));
@@ -268,7 +274,13 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Use the current date as the default date in the picker
+            Date toDisplay=null;
+            try{
+                toDisplay = dateFormat.parse(toDate.getText().toString());
+                if(isOnLeft) toDisplay = dateFormat.parse(fromDate.getText().toString());
+            }catch(ParseException e){}
             final Calendar c = Calendar.getInstance();
+            c.setTime(toDisplay);
             int year = c.get(Calendar.YEAR);
             int month = c.get(Calendar.MONTH);
             int day = c.get(Calendar.DAY_OF_MONTH);
@@ -323,7 +335,5 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
                 }
             }
         }catch (ParseException e){e.printStackTrace();}
-
-
     }
 }
