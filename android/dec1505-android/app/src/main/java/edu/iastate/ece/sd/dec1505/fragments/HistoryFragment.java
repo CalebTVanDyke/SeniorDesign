@@ -46,8 +46,10 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
 
     static TextView fromDate;
     static TextView toDate;
-    TextView fromTime;
-    TextView toTime;
+    static TextView fromTime;
+    static TextView toTime;
+
+    static SimpleDateFormat timeFormat, dateFormat, twntyFourHrFormat;
 
 
     @Override
@@ -63,10 +65,8 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
 
         fromTime = (TextView) findViewById(R.id.time_from);
         toTime = (TextView) findViewById(R.id.time_to);
-        fromTime.setOnClickListener(getTimeOnClick(fromTime));
-        toTime.setOnClickListener(getTimeOnClick(toTime));
-
-        setCurrentDateTimeValues();
+        fromTime.setOnClickListener(getTimeOnClick(fromTime,true));
+        toTime.setOnClickListener(getTimeOnClick(toTime,false));
 
         historyListView = (ListView) rootView.findViewById(R.id.history_data_list);
         historyDataAdapter = new HistoryDataAdapter();
@@ -80,6 +80,13 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
         String endDate = "2015-08-02";
         int dataGap = 1200;
         dataUrl = BASE_DATA_URL+"user_id="+userId+"&startDate="+startDate+"&endDate="+endDate+"&dataGap="+dataGap;
+
+        timeFormat = new SimpleDateFormat("h:mm a");//12 hour format
+        if(DateFormat.is24HourFormat(getActivity())) timeFormat = new SimpleDateFormat("HH:mm");//24 hour format
+        dateFormat = new SimpleDateFormat("M/d/y");
+        twntyFourHrFormat = new SimpleDateFormat("H:mm");
+
+        setCurrentDateTimeValues();
     }
 
     @Override
@@ -103,38 +110,14 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
 
     private void setCurrentDateTimeValues(){
         final Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-        int hour = c.get(Calendar.HOUR_OF_DAY);
-        int minute = c.get(Calendar.MINUTE);
-        int amPm = c.get(Calendar.AM_PM);
-        String amOrPm = "AM";
-        if(amPm==1)amOrPm="PM";
-        Log.e("Dec",""+month);
-        month+=1;
+        Date currTime = c.getTime();
+        c.add(Calendar.HOUR,-1);
+        Date hourBack = c.getTime();
 
-        SimpleDateFormat twntyFrHrFrmt,twlveHrFormat,dateFormat;
-        //TODO
-        DateFormat.is24HourFormat(getActivity());
-        twntyFrHrFrmt = new SimpleDateFormat("HH:mm");//24 hour format
-        twlveHrFormat = new SimpleDateFormat("h:mm a");//12 hour format
-        dateFormat = new SimpleDateFormat("M/d/y");
-
-        String printTime="";
-        String printDate="";
-        try{
-            //if 12 hour pref
-            printTime = twlveHrFormat.format(twlveHrFormat.parse(hour-1+":"+minute+" "+amOrPm));
-            fromTime.setText(printTime);
-            printTime = twlveHrFormat.format(twlveHrFormat.parse(hour+":"+minute+" "+amOrPm));
-            toTime.setText(printTime);
-
-            printDate = dateFormat.format(dateFormat.parse(""+month+"/"+day+"/"+year));
-        }catch(ParseException e){e.printStackTrace();}
-
-        fromDate.setText(printDate);
-        toDate.setText(printDate);
+        fromTime.setText(timeFormat.format(hourBack));
+        toTime.setText(timeFormat.format(currTime));
+        fromDate.setText(dateFormat.format(hourBack));
+        toDate.setText(dateFormat.format(currTime));
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -178,24 +161,24 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
         historyDataAdapter.notifyDataSetChanged();
     }
 
-    public View.OnClickListener getDateOnClick(final TextView dateTextView, final boolean isOnLeft) {
+    public View.OnClickListener getDateOnClick(final TextView dateTextView, final boolean isFromDate) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DatePickerFragment dpf = new DatePickerFragment();
-                dpf.setTextView(dateTextView, isOnLeft);
+                dpf.setTextView(dateTextView, isFromDate);
                 DialogFragment newFragment = dpf;
                 newFragment.show(getFragmentManager(), "datePicker");
             }
         };
     }
 
-    private View.OnClickListener getTimeOnClick(final TextView timeTextView) {
+    private View.OnClickListener getTimeOnClick(final TextView timeTextView, final boolean isFromTime) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TimePickerFragment tpf = new TimePickerFragment();
-                tpf.setTextView(timeTextView);
+                tpf.setTextView(timeTextView, isFromTime);
                 DialogFragment newFragment = tpf;
                 newFragment.show(getFragmentManager(), "timePicker");
             }
@@ -241,6 +224,7 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
     public static class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
 
         TextView toUpdate;
+        boolean isFrom;
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -254,21 +238,18 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
         }
 
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            SimpleDateFormat twntyFrHrFrmt = new SimpleDateFormat("h:mm");//24 hour format
-            SimpleDateFormat twlveHrFormat = new SimpleDateFormat("h:mm a");//12 hour format
 
             try {
-                //TODO
-                //if(24 hr pref)
-                DateFormat.is24HourFormat(getActivity());
-                toUpdate.setText(twntyFrHrFrmt.format(twntyFrHrFrmt.parse(hourOfDay + ":" + minute)));
-                //else if 12 hr pref
-                toUpdate.setText(twlveHrFormat.format(twntyFrHrFrmt.parse(hourOfDay + ":" + minute)));
-            }catch(ParseException e){}
+                Date thisTime = twntyFourHrFormat.parse(hourOfDay+":"+minute);
+                Log.e("","");
+                toUpdate.setText(timeFormat.format(thisTime));
+            }catch(ParseException e){e.printStackTrace();}
+            validateTimeWindow(isFrom);
         }
 
-        public void setTextView(TextView textView) {
+        public void setTextView(TextView textView, boolean isOnLeft) {
             toUpdate = textView;
+            isFrom = isOnLeft;
         }
     }
 
@@ -300,20 +281,48 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
             // Do something with the date chosen by the user
             String date = month+1+"/"+day+"/"+year;
             toUpdate.setText(date);
-            SimpleDateFormat dateFormat = new SimpleDateFormat("M/d/y");
-            Date thisDate,otherDate;
-            try{
-                thisDate = dateFormat.parse(date);
-                if(isOnLeft){
-                    otherDate = dateFormat.parse(toDate.getText().toString());
-                    if(thisDate.getTime()>otherDate.getTime())toDate.setText(dateFormat.format(thisDate));
-                }
-                else {
-                    otherDate = dateFormat.parse(fromDate.getText().toString());
-                    if(thisDate.getTime()<otherDate.getTime())fromDate.setText(dateFormat.format(thisDate));
-                }
-            }catch (ParseException e){e.printStackTrace();}
-
+            validateTimeWindow(isOnLeft);
         }
+    }
+
+    private static void validateTimeWindow(boolean isFrom){
+        try{
+
+            Date thisDate,otherDate;
+            if(isFrom){
+                thisDate = dateFormat.parse(fromDate.getText().toString());
+                otherDate = dateFormat.parse(toDate.getText().toString());
+                if(thisDate.getTime()>otherDate.getTime())toDate.setText(dateFormat.format(thisDate));
+            }
+            else {
+                thisDate = dateFormat.parse(toDate.getText().toString());
+                otherDate = dateFormat.parse(fromDate.getText().toString());
+                if(thisDate.getTime()<otherDate.getTime())fromDate.setText(dateFormat.format(thisDate));
+            }
+
+            //if dates are the same
+            Date left = dateFormat.parse(fromDate.getText().toString());
+            Date right = dateFormat.parse(toDate.getText().toString());
+            Date otherTime;
+            if(left.getTime()>=right.getTime()){
+                Date thisTime;
+                if(isFrom){
+                    thisTime = timeFormat.parse(fromTime.getText().toString());
+                    otherTime = twntyFourHrFormat.parse(toTime.getText().toString());
+                    if(thisTime.getTime()>otherTime.getTime()){
+                        toTime.setText(timeFormat.format(thisTime));
+                    }
+                }
+                else{
+                    thisTime = timeFormat.parse(toTime.getText().toString());
+                    otherTime = twntyFourHrFormat.parse(fromTime.getText().toString());
+                    if(thisTime.getTime()<otherTime.getTime()){
+                        fromTime.setText(timeFormat.format(thisTime));
+                    }
+                }
+            }
+        }catch (ParseException e){e.printStackTrace();}
+
+
     }
 }
