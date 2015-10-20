@@ -4,3 +4,5 @@ android/dec1505-android/.idea/
 .DS_Store
 android/dec1505-android/build
 android/dec1505-android/.idea/compiler.xml
+android/dec1505-android/app/app.iml
+android/dec1505-android/local.properties

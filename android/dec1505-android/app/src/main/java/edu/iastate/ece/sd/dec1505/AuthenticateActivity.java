@@ -42,6 +42,9 @@ public class AuthenticateActivity extends ActionBarActivity{
         setContentView(R.layout.activity_authenticate);
 
         setUpView();
+
+        //Bypass login
+        goToMainActivity("3");//TODO comment out this line to actually use log in.
     }
 
     @Override

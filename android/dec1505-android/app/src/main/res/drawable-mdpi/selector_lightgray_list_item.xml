@@ -5,7 +5,7 @@
         android:drawable="@color/light_gray"/>
     <item 
         android:state_pressed="true"
-        android:drawable="@color/light_gray"/>
+        android:drawable="@color/medium_gray"/>
     <item
         android:drawable="@color/light_background" />
     

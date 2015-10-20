@@ -11,6 +11,7 @@
 
     <color name="white">#FFFFFF</color>
     <color name="light_gray">#E0E0E0</color>
+    <color name="medium_gray">#c0c0c0</color>
     <color name="gray">#9E9E9E</color>
     <color name="black">#FF000000</color>
 
