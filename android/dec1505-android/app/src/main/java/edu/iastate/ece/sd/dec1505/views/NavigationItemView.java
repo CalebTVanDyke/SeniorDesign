@@ -44,7 +44,7 @@ public class NavigationItemView extends FrameLayout {
             itemTitle.setTextColor(primaryColor);
             leftImage.setColorFilter(primaryColor);
         }else{
-            itemTitle.setTextColor(Color.BLACK);
+            itemTitle.setTextColor(getResources().getColor(R.color.text_color));
             leftImage.setColorFilter(Color.TRANSPARENT);
         }
     }

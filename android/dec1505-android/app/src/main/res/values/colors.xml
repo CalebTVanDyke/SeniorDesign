@@ -6,8 +6,9 @@
     <color name="accent_color">#ff004abf</color>
     <color name="overlay">#88000000</color>
     <color name="dark_overlay">#BB000000</color>
-    <color name="text_color">#000000</color>
-    <color name="background">#dddddd</color>
+    <color name="text_color">#cfcfcf</color>
+    <color name="background">#000000</color>
+    <color name="background_slightly_lighter">#303030</color>
 
 
     <color name="white">#FFFFFF</color>
@@ -16,6 +17,6 @@
     <color name="gray">#9E9E9E</color>
     <color name="black">#FF000000</color>
 
-    <color name="divider">#1F000000</color>
+    <color name="divider">#64898989</color>
 
 </resources>
