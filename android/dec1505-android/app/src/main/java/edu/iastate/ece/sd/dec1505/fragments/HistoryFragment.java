@@ -29,6 +29,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 import edu.iastate.ece.sd.dec1505.R;
 import edu.iastate.ece.sd.dec1505.models.Reading;
@@ -43,7 +44,10 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
     ListView historyListView;
     HistoryDataAdapter historyDataAdapter;
 
-    TextView fromDate,toDate,fromTime,toTime;
+    static TextView fromDate;
+    static TextView toDate;
+    TextView fromTime;
+    TextView toTime;
 
 
     @Override
@@ -54,8 +58,8 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
 
         fromDate = (TextView) findViewById(R.id.date_from);
         toDate = (TextView) findViewById(R.id.date_to);
-        fromDate.setOnClickListener(getDateOnClick(fromDate));
-        toDate.setOnClickListener(getDateOnClick(toDate));
+        fromDate.setOnClickListener(getDateOnClick(fromDate,true));
+        toDate.setOnClickListener(getDateOnClick(toDate,false));
 
         fromTime = (TextView) findViewById(R.id.time_from);
         toTime = (TextView) findViewById(R.id.time_to);
@@ -110,18 +114,20 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
         Log.e("Dec",""+month);
         month+=1;
 
-        SimpleDateFormat timeFormat,dateFormat;
+        SimpleDateFormat twntyFrHrFrmt,twlveHrFormat,dateFormat;
         //TODO
-        //sdf = new SimpleDateFormat("HH:mm:ss");//24 hour format
-        timeFormat = new SimpleDateFormat("h:m:ss a");//12 hour format
+        DateFormat.is24HourFormat(getActivity());
+        twntyFrHrFrmt = new SimpleDateFormat("HH:mm");//24 hour format
+        twlveHrFormat = new SimpleDateFormat("h:mm a");//12 hour format
         dateFormat = new SimpleDateFormat("M/d/y");
 
         String printTime="";
         String printDate="";
         try{
-            printTime = timeFormat.format(timeFormat.parse(hour-1+":"+minute+":00 "+amOrPm));
+            //if 12 hour pref
+            printTime = twlveHrFormat.format(twlveHrFormat.parse(hour-1+":"+minute+" "+amOrPm));
             fromTime.setText(printTime);
-            printTime = timeFormat.format(timeFormat.parse(hour+":"+minute+":00 "+amOrPm));
+            printTime = twlveHrFormat.format(twlveHrFormat.parse(hour+":"+minute+" "+amOrPm));
             toTime.setText(printTime);
 
             printDate = dateFormat.format(dateFormat.parse(""+month+"/"+day+"/"+year));
@@ -172,12 +178,12 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
         historyDataAdapter.notifyDataSetChanged();
     }
 
-    public View.OnClickListener getDateOnClick(final TextView dateTextView) {
+    public View.OnClickListener getDateOnClick(final TextView dateTextView, final boolean isOnLeft) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DatePickerFragment dpf = new DatePickerFragment();
-                dpf.setTextView(dateTextView);
+                dpf.setTextView(dateTextView, isOnLeft);
                 DialogFragment newFragment = dpf;
                 newFragment.show(getFragmentManager(), "datePicker");
             }
@@ -241,15 +247,24 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
             // Use the current time as the default values for the picker
             final Calendar c = Calendar.getInstance();
             int hour = c.get(Calendar.HOUR_OF_DAY);
-            int minute = c.get(Calendar.MINUTE);
+            int minute = 0;//c.get(Calendar.MINUTE);
 
             // Create a new instance of TimePickerDialog and return it
             return new TimePickerDialog(getActivity(), this, hour, minute, DateFormat.is24HourFormat(getActivity()));
         }
 
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            // Do something with the time chosen by the user
-            toUpdate.setText(hourOfDay+":"+minute);
+            SimpleDateFormat twntyFrHrFrmt = new SimpleDateFormat("h:mm");//24 hour format
+            SimpleDateFormat twlveHrFormat = new SimpleDateFormat("h:mm a");//12 hour format
+
+            try {
+                //TODO
+                //if(24 hr pref)
+                DateFormat.is24HourFormat(getActivity());
+                toUpdate.setText(twntyFrHrFrmt.format(twntyFrHrFrmt.parse(hourOfDay + ":" + minute)));
+                //else if 12 hr pref
+                toUpdate.setText(twlveHrFormat.format(twntyFrHrFrmt.parse(hourOfDay + ":" + minute)));
+            }catch(ParseException e){}
         }
 
         public void setTextView(TextView textView) {
@@ -262,8 +277,11 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
     public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
         TextView toUpdate;
-        public void setTextView(TextView tv){
+        boolean isOnLeft;
+
+        public void setTextView(TextView tv, boolean isLeft){
             toUpdate = tv;
+            isOnLeft = isLeft;
         }
 
         @Override
@@ -280,7 +298,22 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
 
         public void onDateSet(DatePicker view, int year, int month, int day) {
             // Do something with the date chosen by the user
-            toUpdate.setText(month+1+"/"+day+"/"+year);
+            String date = month+1+"/"+day+"/"+year;
+            toUpdate.setText(date);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("M/d/y");
+            Date thisDate,otherDate;
+            try{
+                thisDate = dateFormat.parse(date);
+                if(isOnLeft){
+                    otherDate = dateFormat.parse(toDate.getText().toString());
+                    if(thisDate.getTime()>otherDate.getTime())toDate.setText(dateFormat.format(thisDate));
+                }
+                else {
+                    otherDate = dateFormat.parse(fromDate.getText().toString());
+                    if(thisDate.getTime()<otherDate.getTime())fromDate.setText(dateFormat.format(thisDate));
+                }
+            }catch (ParseException e){e.printStackTrace();}
+
         }
     }
 }
