@@ -10,7 +10,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white">
+        android:background="@color/background_slightly_lighter">
 
         <TextView
             android:id="@+id/dialog_title"
@@ -82,7 +82,7 @@
                 android:id="@+id/dialog_neutral"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/selector_lightgray_list_item_rounded"
+                android:background="@drawable/selector_navdrawer_list_item"
                 android:gravity="center"
                 android:textStyle="bold"
                 android:padding="@dimen/dialog_options_padding"
