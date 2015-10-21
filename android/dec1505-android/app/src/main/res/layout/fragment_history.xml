@@ -17,33 +17,22 @@
         android:id="@+id/date_window_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/padding_medium"
+        android:paddingTop="@dimen/padding_medium"
+        android:paddingBottom="0dp"
         android:background="@color/background_slightly_lighter">
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/from_to_label_row">
+            android:id="@+id/date_selection_row"
+            android:padding="@dimen/padding_small">
+
             <TextView
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:text="From:"
                 android:gravity="center"
                 android:layout_weight="1"/>
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:text="To:"
-                android:gravity="center"
-                android:layout_weight="1"/>
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/date_selection_row"
-            android:padding="@dimen/padding_small"
-            android:layout_below="@+id/from_to_label_row">
             <TextView
                 android:id="@+id/date_from"
                 android:layout_width="0dp"
@@ -53,25 +42,17 @@
                 android:textColor="@color/primary_dark_color"
                 android:gravity="center"
                 android:textStyle="bold"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:background="@drawable/selector_lightgray_list_item_rounded"/>
+
             <TextView
-                android:id="@+id/date_to"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/list_item_header_small"
-                android:text="08/02/2015"
-                android:textColor="@color/primary_dark_color"
+                android:layout_height="wrap_content"
+                android:text="\@"
+                android:layout_marginRight="@dimen/padding_medium"
                 android:gravity="center"
-                android:textStyle="bold"
-                android:layout_weight="1"
-                android:background="@drawable/selector_lightgray_list_item_rounded"/>
-        </TableRow>
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/time_selection_row"
-            android:padding="@dimen/padding_small"
-            android:layout_below="@+id/date_selection_row">
+                android:layout_weight=".3"/>
+
             <TextView
                 android:id="@+id/time_from"
                 android:layout_marginRight="@dimen/padding_medium"
@@ -81,13 +62,83 @@
                 android:textColor="@color/primary_dark_color"
                 android:gravity="center"
                 android:textStyle="bold"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:background="@drawable/selector_lightgray_list_item_rounded"/>
+
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/time_selection_row"
+            android:padding="@dimen/padding_small"
+            android:layout_below="@+id/date_selection_row">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="To:"
+                android:gravity="center"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/date_to"
+                android:layout_marginRight="@dimen/padding_medium"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/list_item_header_small"
+                android:text="08/02/2015"
+                android:textColor="@color/primary_dark_color"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:layout_weight="2"
+                android:background="@drawable/selector_lightgray_list_item_rounded"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="\@"
+                android:layout_marginRight="@dimen/padding_medium"
+                android:gravity="center"
+                android:layout_weight=".3"/>
+
             <TextView
                 android:id="@+id/time_to"
+                android:layout_marginRight="@dimen/padding_medium"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/list_item_header_small"
                 android:text="6:30am"
+                android:textColor="@color/primary_dark_color"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:layout_weight="2"
+                android:background="@drawable/selector_lightgray_list_item_rounded"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/freq_selection_row"
+            android:padding="@dimen/padding_small"
+            android:layout_below="@+id/time_selection_row">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Frequency of data:"
+                android:gravity="center"
+                android:layout_weight="1.5"/>
+
+            <Spinner
+                android:id="@+id/freq_choice_spinner"
+                android:layout_marginRight="@dimen/padding_medium"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/list_item_header_small"
+                android:layout_weight="1"
+                android:background="@drawable/selector_lightgray_list_item_rounded"/>
+
+            <TextView
+                android:id="@+id/load_data_button"
+                android:layout_marginRight="@dimen/padding_medium"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/list_item_header_small"
+                android:text="Load Data"
                 android:textColor="@color/primary_dark_color"
                 android:gravity="center"
                 android:textStyle="bold"

@@ -12,4 +12,12 @@
     <string name="live_data_info">This section of the application allows you to view the data as it is read by the sensors.</string>
     <string name="history_info">This section of the application allows you to view previous readings for a specific time window and of the desired frequency.</string>
 
+    <string-array name="hist_freq_choices">
+        <item>1 min</item>
+        <item>5 min</item>
+        <item>10 min</item>
+        <item>30 min</item>
+        <item>1 hour</item>
+    </string-array>
+
 </resources>
