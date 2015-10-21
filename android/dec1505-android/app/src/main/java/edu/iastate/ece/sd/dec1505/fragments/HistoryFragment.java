@@ -49,10 +49,9 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
     ListView historyListView;
     HistoryDataAdapter historyDataAdapter;
 
-    static TextView fromDate;
-    static TextView toDate;
-    static TextView fromTime;
-    static TextView toTime;
+    static TextView fromDate,toDate,fromTime,toTime;
+
+    ProgressBar progBar;
 
     static SimpleDateFormat timeFormat, dateFormat, twntyFourHrFormat;
 
@@ -62,6 +61,8 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
 
     @Override
     public void onConnectViews() {
+
+        progBar = (ProgressBar) rootView.findViewById(R.id.history_loading);
 
         fromDate = (TextView) findViewById(R.id.date_from);
         toDate = (TextView) findViewById(R.id.date_to);
@@ -80,6 +81,8 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
 
     @Override
     public void onInitialSetup(){
+
+        //hard coded for debugging
         int userId= 3;
         String startDate = "2015-08-02";
         String endDate = "2015-08-02";
@@ -131,7 +134,7 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
                 //assemble url string
 
                 //request data
-                onRequestData(DefaultRequestQueue.getDefaultQueue(getContext()));
+                DefaultRequestQueue.getDefaultQueue(getContext()).add(getDataRequest());
             }
         };
     }
@@ -162,6 +165,8 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
     }
 
     private StringRequest getDataRequest(){
+        progBar.setVisibility(View.VISIBLE);
+        historyDataAdapter.setListVisibility(View.INVISIBLE);
         return new StringRequest(dataUrl,
                 new Response.Listener<String>() {
                     @Override
@@ -173,7 +178,6 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
                         Log.e("Data", "Data Fetch Error: " + volleyError.toString());
-                        ProgressBar progBar = (ProgressBar) rootView.findViewById(R.id.history_loading);
                         progBar.setVisibility(View.GONE);
                         Toast.makeText(getContext(),"Failed to load data", Toast.LENGTH_LONG).show();
                     }
@@ -184,9 +188,10 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
     private void parseData(String data){
         //Log.d("Data","Data Received: "+data);
         readings = Reading.parseData(data);
-        ProgressBar progBar = (ProgressBar) rootView.findViewById(R.id.history_loading);
         progBar.setVisibility(View.GONE);
+        historyDataAdapter.setListVisibility(View.VISIBLE);
         historyDataAdapter.notifyDataSetChanged();
+        historyDataAdapter.setToTop();
     }
 
     public View.OnClickListener getDateOnClick(final TextView dateTextView, final boolean isFromDate) {
@@ -244,6 +249,16 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
             itemView.setTempView(""+toView.getTempForUI());
 
             return itemView;
+        }
+
+        public void setToTop() {
+            ListView dataList = (ListView)findViewById(R.id.history_data_list);
+            dataList.setSelectionAfterHeaderView();
+        }
+
+        public void setListVisibility(int visibility){
+            ListView dataList = (ListView)findViewById(R.id.history_data_list);
+            dataList.setVisibility(visibility);
         }
     }
 

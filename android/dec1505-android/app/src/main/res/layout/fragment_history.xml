@@ -3,16 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-    <ProgressBar
-        android:visibility="visible"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:id="@+id/history_loading"
-        android:layout_gravity="center" />
-
     <RelativeLayout
         android:id="@+id/date_window_header"
         android:layout_width="match_parent"
@@ -161,5 +151,19 @@
         android:id="@+id/history_data_list"
         android:fastScrollEnabled="true"
         android:layout_below="@id/history_labels_header"></ListView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/history_labels_header">
+        <ProgressBar
+            android:visibility="invisible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:id="@+id/history_loading"
+            android:layout_gravity="center" />
+    </RelativeLayout>
 
 </RelativeLayout>
