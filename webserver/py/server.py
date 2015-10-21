@@ -34,6 +34,7 @@ GET_DAY_DATA = "getDayData"
 GET_DATE_RANGE_DATA = "getDateRangeData"
 API_LOGIN = "apiLogin"
 API_REGISTER = "apiRegister"
+DATETIME_RANGE = "getDateTimeRange"
 
 
 @app.route("/")
@@ -121,7 +122,7 @@ def apiRegister():
         return jsonify(**{"error" : False})
     return jsonify(**{"error" : True})
 
-@app.rout("/" + DATETIME_RANGE)
+@app.route("/" + DATETIME_RANGE)
 def getDateTimeRange():
     user_id = request.args.get('user_id')
     if user_id == None:

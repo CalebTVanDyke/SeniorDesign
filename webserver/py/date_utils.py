@@ -34,13 +34,14 @@ class DateUtils:
 		return applyDataFrequency(result, dataGap)
 
 	@staticmethod
-	def GetDataDateTimeRange(db, startDateTime, endDateTime, user_id, dateGap):
+	def GetDataDateTimeRange(db, startDateTime, endDateTime, user_id, dataGap):
 		dateRangeNoData = '<div class="alert alert-warning" role="alert">No data was found for date range: {0} to {1}.</div>'
 		cmd = "SELECT * FROM `readings` WHERE time >= '{0}' AND time <= '{1}' " \
-					"AND user_id={2} ORDER BY time asc".format(startDate, endDate, user_id)
+					"AND user_id={2} ORDER BY time asc".format(startDateTime, endDateTime, user_id)
+		print cmd
 		result = db.query(cmd)
 		if result == None:
-			return dateRangeNoData.format(startDate, endDate)
+			return dateRangeNoData.format(startDateTime, endDateTime)
 		return applyDataFrequency(result, dataGap)
 		
 def applyDataFrequency(result, dataGap):
