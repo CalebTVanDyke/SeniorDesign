@@ -2,32 +2,35 @@ package edu.iastate.ece.sd.dec1505;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
+import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import java.util.LinkedList;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
-import edu.iastate.ece.sd.dec1505.fragments.ApplicationFragment;
-import edu.iastate.ece.sd.dec1505.models.Navigation;
-import edu.iastate.ece.sd.dec1505.views.NavigationItemView;
-import edu.iastate.ece.sd.dec1505.views.base.BaseLayout;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class AuthenticateActivity extends ActionBarActivity{
@@ -35,6 +38,7 @@ public class AuthenticateActivity extends ActionBarActivity{
     Toolbar toolbar;
 
     public final static String USERID = "current user";
+    final String AUTH_URL = "http://cvandyke.ddns.net/apiLogin";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +48,7 @@ public class AuthenticateActivity extends ActionBarActivity{
         setUpView();
 
         //Bypass login
-        goToMainActivity("3");//TODO comment out this line to actually use log in.
+        //goToMainActivity("3");//TODO comment out this line to actually use log in.
     }
 
     @Override
@@ -68,28 +72,80 @@ public class AuthenticateActivity extends ActionBarActivity{
             public void onClick(View v) {
                 EditText userName = (EditText) findViewById(R.id.username_field);
                 EditText pass = (EditText) findViewById(R.id.password_field);
-                attemptAuthenticate(userName.getText().toString(),pass.getText().toString());
+                attemptLogin(userName.getText().toString(), pass.getText().toString());
             }
         });
     }
 
-    private void attemptAuthenticate(String attemptedUser, String attemptedPass){
+    private void attemptLogin(String attemptedUser, String attemptedPass){
 
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
 
         ProgressBar spinner = (ProgressBar) findViewById(R.id.auth_loading);
         spinner.setVisibility(View.VISIBLE);
-        //TODO attempt auth
 
-        //if successful
-        goToMainActivity(attemptedUser);
+        //TODO attempt auth
+        EditText usrNameField = (EditText) findViewById(R.id.username_field);
+        String username = usrNameField.getText().toString();
+        EditText psswrdField = (EditText) findViewById(R.id.password_field);
+        String password = psswrdField.getText().toString();
+
+        new RetrieveFeedTask().execute(username, password);
     }
 
-    private void goToMainActivity(String authenticatedUser){
+    private void finishAuthenticationAttempt(HttpResponse response){
+
+        HttpEntity entity = response.getEntity();
+
+        boolean success = false;
+        int userId = -1;
+        JSONObject jObj = null;
+        try{
+            jObj = new JSONObject(EntityUtils.toString(entity, "UTF-8"));
+            success = !jObj.getBoolean("error");
+            userId = jObj.getInt("user_id");
+        }catch(Exception e){e.printStackTrace();}
+
+        Log.i("Auth", "Auth attempt successful?:" + success+", response:"+jObj);
+
+        if(success)goToMainActivity(userId);
+    }
+
+    private void goToMainActivity(int authenticatedUser){
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.putExtra(USERID, authenticatedUser);
         startActivity(intent);
         finish();
+    }
+
+    class RetrieveFeedTask extends AsyncTask<String, Void, HttpResponse> {
+
+        private Exception exception;
+
+        protected HttpResponse doInBackground(String... args) {
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpPost httppost = new HttpPost(AUTH_URL);
+
+            try {
+                // Add your data
+                List<NameValuePair> nameValuePairs = new ArrayList<>(2);
+                nameValuePairs.add(new BasicNameValuePair("username", args[0]));
+                nameValuePairs.add(new BasicNameValuePair("password", args[1]));
+                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+                // Execute HTTP Post Request
+                return httpclient.execute(httppost);
+            } catch (ClientProtocolException e) {
+                // TODO Auto-generated catch block
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+            }
+            return null;
+        }
+
+        protected void onPostExecute(HttpResponse response) {
+            finishAuthenticationAttempt(response);
+        }
     }
 }

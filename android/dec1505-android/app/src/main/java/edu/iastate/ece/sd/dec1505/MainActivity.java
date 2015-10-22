@@ -44,6 +44,8 @@ public class MainActivity extends ActionBarActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        
+
         // Connect base layout to call bottom sheets and popups
         baseLayout = (BaseLayout) findViewById(R.id.base_layout);
 

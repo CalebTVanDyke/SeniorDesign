@@ -14,9 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -24,12 +22,11 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-
-import org.w3c.dom.Text;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -46,12 +43,14 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
 
     int userId;
     final String BASE_DATA_URL =  "http://cvandyke.ddns.net/getDateTimeRange?";
+    final int REQUEST_TIMEOUT = 10000;
     String dataUrl="";
     ArrayList<Reading> readings = new ArrayList<>();
     ListView historyListView;
     HistoryDataAdapter historyDataAdapter;
 
-    static TextView fromDate,toDate,fromTime,toTime;
+    static TextView fromDateView, toDateView, fromTimeView, toTimeView;
+    static Date fromDate, toDate;
 
     ProgressBar progBar;
 
@@ -66,15 +65,15 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
 
         progBar = (ProgressBar) rootView.findViewById(R.id.history_loading);
 
-        fromDate = (TextView) findViewById(R.id.date_from);
-        toDate = (TextView) findViewById(R.id.date_to);
-        fromDate.setOnClickListener(getDateOnClick(fromDate,true));
-        toDate.setOnClickListener(getDateOnClick(toDate,false));
+        fromDateView = (TextView) findViewById(R.id.date_from);
+        toDateView = (TextView) findViewById(R.id.date_to);
+        fromDateView.setOnClickListener(getDateOnClick(fromDateView, true));
+        toDateView.setOnClickListener(getDateOnClick(toDateView, false));
 
-        fromTime = (TextView) findViewById(R.id.time_from);
-        toTime = (TextView) findViewById(R.id.time_to);
-        fromTime.setOnClickListener(getTimeOnClick(fromTime,true));
-        toTime.setOnClickListener(getTimeOnClick(toTime, false));
+        fromTimeView = (TextView) findViewById(R.id.time_from);
+        toTimeView = (TextView) findViewById(R.id.time_to);
+        fromTimeView.setOnClickListener(getTimeOnClick(fromTimeView, true));
+        toTimeView.setOnClickListener(getTimeOnClick(toTimeView, false));
 
         historyListView = (ListView) rootView.findViewById(R.id.history_data_list);
         historyDataAdapter = new HistoryDataAdapter();
@@ -86,10 +85,6 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
 
         //hard coded for debugging
         userId= 3;
-        String startDate = "2015-08-02";
-        String endDate = "2015-08-02";
-        int dataGap = 1200;
-        dataUrl = BASE_DATA_URL+"user_id="+userId+"&startDate="+startDate+"&endDate="+endDate+"&dataGap="+dataGap;
 
         timeFormat = new SimpleDateFormat("h:mm a");//12 hour format
         if(DateFormat.is24HourFormat(getActivity())) timeFormat = new SimpleDateFormat("HH:mm");//24 hour format
@@ -129,18 +124,18 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //get values of fromDate and time, toDate and time, and frequency spinner
 
                 //assemble url string
-                String startDate = fromDate.getText().toString();
-                String startTime = " "+fromTime.getText().toString();
-                String endDate = toDate.getText().toString();
-                String endTime = " "+toTime.getText().toString();
+                SimpleDateFormat urlDateFormat = new SimpleDateFormat("y-MM-dd");
+                String startDate = urlDateFormat.format(fromDate);
+                String startTime = " "+ fromTimeView.getText().toString()+":00";
+                String endDate = urlDateFormat.format(toDate);
+                String endTime = " "+ toTimeView.getText().toString()+":00";
                 Spinner freqSpin = (Spinner) findViewById(R.id.freq_choice_spinner);
                 String dataGap = freqSpin.getSelectedItem().toString();
                 dataGap = convertDataGap(dataGap);
 
-                dataUrl = BASE_DATA_URL+"user_id="+userId+"&startDate="+startDate+startTime+"&endDate="+endDate+endTime+"&dataGap="+dataGap;
+                dataUrl = BASE_DATA_URL+"user_id="+userId+"&startDateTime="+startDate+startTime+"&endDateTime="+endDate+endTime+"&dataGap="+dataGap;
                 dataUrl = dataUrl.replace(" ","%20");
                 Log.i("History Url",dataUrl);
 
@@ -156,10 +151,12 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
         c.add(Calendar.HOUR,-1);
         Date hourBack = c.getTime();
 
-        fromTime.setText(timeFormat.format(hourBack));
-        toTime.setText(timeFormat.format(currTime));
-        fromDate.setText(dateFormat.format(hourBack));
-        toDate.setText(dateFormat.format(currTime));
+        fromDate = currTime;
+        toDate = currTime;
+        fromTimeView.setText(timeFormat.format(hourBack));
+        toTimeView.setText(timeFormat.format(currTime));
+        fromDateView.setText(dateFormat.format(hourBack));
+        toDateView.setText(dateFormat.format(currTime));
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -178,7 +175,7 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
     private StringRequest getDataRequest(){
         progBar.setVisibility(View.VISIBLE);
         historyDataAdapter.setListVisibility(View.INVISIBLE);
-        return new StringRequest(dataUrl,
+        StringRequest sr = new StringRequest(dataUrl,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String data) {
@@ -194,6 +191,11 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
                     }
                 }
         );
+        sr.setRetryPolicy(new DefaultRetryPolicy(
+                REQUEST_TIMEOUT,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        return sr;
     }
 
     private void parseData(String data){
@@ -295,8 +297,8 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
             // Use the current time as the default values for the picker
             Date toDisplay=null;
             try{
-                toDisplay = timeFormat.parse(toTime.getText().toString());
-                if(isFrom) toDisplay = timeFormat.parse(fromTime.getText().toString());
+                toDisplay = timeFormat.parse(toTimeView.getText().toString());
+                if(isFrom) toDisplay = timeFormat.parse(fromTimeView.getText().toString());
             }catch(ParseException e){}
             final Calendar c = Calendar.getInstance();
             c.setTime(toDisplay);
@@ -340,8 +342,8 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
             // Use the current date as the default date in the picker
             Date toDisplay=null;
             try{
-                toDisplay = dateFormat.parse(toDate.getText().toString());
-                if(isOnLeft) toDisplay = dateFormat.parse(fromDate.getText().toString());
+                toDisplay = dateFormat.parse(toDateView.getText().toString());
+                if(isOnLeft) toDisplay = dateFormat.parse(fromDateView.getText().toString());
             }catch(ParseException e){}
             final Calendar c = Calendar.getInstance();
             c.setTime(toDisplay);
@@ -367,34 +369,38 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
             //validate dates
             Date thisDate,otherDate;
             if(isFromSide){
-                thisDate = dateFormat.parse(fromDate.getText().toString());
-                otherDate = dateFormat.parse(toDate.getText().toString());
-                if(thisDate.getTime()>otherDate.getTime())toDate.setText(dateFormat.format(thisDate));
+                thisDate = dateFormat.parse(fromDateView.getText().toString());
+                otherDate = dateFormat.parse(toDateView.getText().toString());
+                if(thisDate.getTime()>otherDate.getTime()) toDateView.setText(dateFormat.format(thisDate));
+                fromDate =  dateFormat.parse(fromDateView.getText().toString());
+                toDate =    dateFormat.parse(toDateView.getText().toString());
             }
             else {
-                thisDate = dateFormat.parse(toDate.getText().toString());
-                otherDate = dateFormat.parse(fromDate.getText().toString());
-                if(thisDate.getTime()<otherDate.getTime())fromDate.setText(dateFormat.format(thisDate));
+                thisDate = dateFormat.parse(toDateView.getText().toString());
+                otherDate = dateFormat.parse(fromDateView.getText().toString());
+                if(thisDate.getTime()<otherDate.getTime()) fromDateView.setText(dateFormat.format(thisDate));
+                fromDate =  dateFormat.parse(fromDateView.getText().toString());
+                toDate =    dateFormat.parse(toDateView.getText().toString());
             }
 
             //validate times
-            Date leftDate = dateFormat.parse(fromDate.getText().toString());
-            Date rightDate = dateFormat.parse(toDate.getText().toString());
+            Date leftDate = dateFormat.parse(fromDateView.getText().toString());
+            Date rightDate = dateFormat.parse(toDateView.getText().toString());
             Date otherTime;
             if(leftDate.getTime()>=rightDate.getTime()){
                 Date thisTime;
                 if(isFromSide){
-                    thisTime = timeFormat.parse(fromTime.getText().toString());
-                    otherTime = timeFormat.parse(toTime.getText().toString());
+                    thisTime = timeFormat.parse(fromTimeView.getText().toString());
+                    otherTime = timeFormat.parse(toTimeView.getText().toString());
                     if(thisTime.getTime()>otherTime.getTime()){
-                        toTime.setText(timeFormat.format(thisTime));
+                        toTimeView.setText(timeFormat.format(thisTime));
                     }
                 }
                 else{
-                    thisTime = timeFormat.parse(toTime.getText().toString());
-                    otherTime = timeFormat.parse(fromTime.getText().toString());
+                    thisTime = timeFormat.parse(toTimeView.getText().toString());
+                    otherTime = timeFormat.parse(fromTimeView.getText().toString());
                     if(thisTime.getTime()<otherTime.getTime()){
-                        fromTime.setText(timeFormat.format(thisTime));
+                        fromTimeView.setText(timeFormat.format(thisTime));
                     }
                 }
             }
