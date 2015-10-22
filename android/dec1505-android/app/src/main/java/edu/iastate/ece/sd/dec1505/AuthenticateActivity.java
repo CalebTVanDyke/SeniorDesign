@@ -121,8 +121,6 @@ public class AuthenticateActivity extends ActionBarActivity{
 
     class RetrieveFeedTask extends AsyncTask<String, Void, HttpResponse> {
 
-        private Exception exception;
-
         protected HttpResponse doInBackground(String... args) {
             HttpClient httpclient = new DefaultHttpClient();
             HttpPost httppost = new HttpPost(AUTH_URL);
