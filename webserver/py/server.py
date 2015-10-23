@@ -6,7 +6,6 @@ import serial
 import struct
 from flask import Flask, flash, redirect, url_for, session, render_template, request, session, jsonify
 from flask.ext.socketio import SocketIO, emit
-from flask.ext.cache import Cache
 from threading import Thread
 from random import randint
 from forms import LoginForm, RegisterForm
@@ -178,4 +177,4 @@ def test_disconnect():
     print('Client disconnected')
 
 if __name__ == "__main__":
-    socketio.run(app, host='0.0.0.0', port=8080)
+    socketio.run(app, host='0.0.0.0', port=80)
