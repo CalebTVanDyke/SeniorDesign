@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/base_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background_slightly_lighter">
 
     <android.support.v7.widget.Toolbar
         android:id='@+id/toolbar'
@@ -67,9 +68,21 @@
         android:layout_height="wrap_content"
         android:text="Log In"
         android:id="@+id/login_button"
-        android:layout_below="@+id/password_field"
         android:textColor="@color/primary_color"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@+id/password_field"
+        android:layout_alignRight="@+id/password_field"
+        android:layout_alignEnd="@+id/password_field" />
+
+    <CheckBox
+        android:id="@+id/stay_logged_in_box"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stay logged in"
+        android:textColor="@color/white"
+        android:layout_alignTop="@+id/login_button"
+        android:layout_alignLeft="@+id/password_field"
+        android:layout_alignStart="@+id/password_field"
+        android:layout_alignBottom="@+id/login_button" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -77,6 +90,7 @@
         android:layout_height="wrap_content"
         android:text="Register"
         android:id="@+id/register_button"
+        android:textColor="@color/black"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 
@@ -85,9 +99,10 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="New User?"
+        android:textSize="@dimen/padding_normal"
         android:id="@+id/textView3"
         android:layout_above="@+id/register_button"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"/>
 
 
 </RelativeLayout>

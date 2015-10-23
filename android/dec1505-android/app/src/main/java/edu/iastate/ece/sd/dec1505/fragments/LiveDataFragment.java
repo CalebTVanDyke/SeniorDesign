@@ -1,12 +1,19 @@
 package edu.iastate.ece.sd.dec1505.fragments;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
@@ -41,6 +48,11 @@ public class LiveDataFragment extends ApplicationFragment implements Runnable{
     boolean testingAlert=false;
     boolean alertSent = false;
 
+    Button nightModeButton;
+    boolean nightMode = false;
+
+    Drawable btnBackground;
+
     @Override
     public int getRootViewId() {return R.layout.fragment_live_data;}
 
@@ -50,15 +62,40 @@ public class LiveDataFragment extends ApplicationFragment implements Runnable{
         heartRateView = (TextView) findViewById(R.id.heartrate_text_view);
         tempView = (TextView) findViewById(R.id.temp_text_view);
 
-        final Button but = (Button) findViewById(R.id.alert_button);
-        but.setOnClickListener(new View.OnClickListener() {
+        nightModeButton = (Button) findViewById(R.id.night_mode);
+        nightModeButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                testingAlert = !testingAlert;
-                alertSent=false;
-                but.setText("Testing Alert: "+testingAlert);
+            public void onClick(View view) {
+                convertNightMode();
             }
         });
+    }
+
+    private void convertNightMode() {
+        nightMode = !nightMode;
+        RelativeLayout rl = (RelativeLayout) findViewById(R.id.live_data_wrapper);
+        Window window = getSupportActivity().getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        if (nightMode) {
+            nightModeButton.setText("Night");
+            nightModeButton.setTextColor(Color.WHITE);
+            btnBackground = nightModeButton.getBackground();
+            nightModeButton.setBackground(getResources().getDrawable(R.drawable.selector_navdrawer_list_item));
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.black)));
+            rl.setBackgroundColor(getResources().getColor(R.color.black));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.black));
+            getSupportActivity().nightModeOverlay(View.VISIBLE);
+        }
+        else{
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.primary_color)));
+            rl.setBackgroundColor(Color.TRANSPARENT);
+            nightModeButton.setText("Day");
+            nightModeButton.setTextColor(Color.BLACK);
+            nightModeButton.setBackground(btnBackground);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.primary_dark_color));
+            getSupportActivity().nightModeOverlay(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -98,6 +135,7 @@ public class LiveDataFragment extends ApplicationFragment implements Runnable{
     public void onPause(){
         super.onPause();
         if(intervalTimer!=null)intervalTimer.removeCallbacks(this);
+        if(nightMode)convertNightMode();
     }
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -142,9 +180,10 @@ public class LiveDataFragment extends ApplicationFragment implements Runnable{
     }
 
     private void updateViews(int heartRate, int bloodOx, double temp){
-        DecimalFormat df = new DecimalFormat("000");
+        String heartRateStr = ""+heartRate;
         DecimalFormat df2 = new DecimalFormat("00.0");
-        heartRateView.setText(""+df.format(heartRate)+" bpm");
+        while(heartRateStr.length()<3)heartRateStr="\u0020"+" "+heartRateStr;
+        heartRateView.setText(heartRateStr+" bpm");
         bloodOxView.setText(bloodOx+"%");
         tempView.setText(df2.format(temp)+"°F");
     }

@@ -47,4 +47,11 @@
 
     </android.support.v4.widget.DrawerLayout>
 
+    <RelativeLayout
+        android:id="@+id/entire_app_overlay"
+        android:background="@color/dark_overlay"
+        android:visibility="invisible"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"></RelativeLayout>
+
 </edu.iastate.ece.sd.dec1505.views.base.BaseLayout>

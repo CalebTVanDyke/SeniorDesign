@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import java.util.LinkedList;
 
@@ -138,15 +139,20 @@ public class MainActivity extends ActionBarActivity{
     }
 
     public void showBottomSheet(String title, View view) {
-        baseLayout.showBottomSheet(title,view);
+        baseLayout.showBottomSheet(title, view);
     }
 
     public void showDialog(String title,String message,String[] options, View.OnClickListener[] listeners){
-        baseLayout.showDialog(title,message,options, listeners);
+        baseLayout.showDialog(title, message, options, listeners);
     }
 
     public void showDialog(String title,View content,String[] options, View.OnClickListener[] listeners){
         baseLayout.showDialog(title,content,options, listeners);
+    }
+
+    public void nightModeOverlay(int visible) {
+        RelativeLayout overlay = (RelativeLayout) findViewById(R.id.entire_app_overlay);
+        overlay.setVisibility(visible);
     }
 
     public class DrawerToggle extends ActionBarDrawerToggle {
@@ -167,7 +173,7 @@ public class MainActivity extends ActionBarActivity{
         @Override
         public void onClick(View v) {
             if(navigationItem.title.equals("Log Out")){
-                Prefs.put(getContext(), Prefs.loggedIn, false);
+                Prefs.put(getApplicationContext(), Prefs.AUTO_LOGIN, false);
                 Intent i = new Intent(getContext(),AuthenticateActivity.class);
                 startActivity(i);
                 finish();

@@ -11,10 +11,11 @@ import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -24,7 +25,6 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
@@ -32,10 +32,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.iastate.ece.sd.dec1505.tools.Prefs;
+
 
 public class AuthenticateActivity extends ActionBarActivity{
 
     Toolbar toolbar;
+    EditText user,pass;
+    CheckBox stayLoggedInBox;
 
     public final static String USERID = "current user";
     final String AUTH_URL = "http://cvandyke.ddns.net/apiLogin";
@@ -47,6 +51,12 @@ public class AuthenticateActivity extends ActionBarActivity{
 
         setUpView();
 
+        boolean autoLogin = Prefs.get(getApplicationContext(),Prefs.AUTO_LOGIN);
+        if(autoLogin){
+            user.setText(Prefs.getLastUser(getApplicationContext()));
+            pass.setText(Prefs.getLastPass(getApplicationContext()));
+            attemptLogin(Prefs.getLastUser(getApplicationContext()), Prefs.getLastPass(getApplicationContext()));
+        }
         //Bypass login
         //goToMainActivity("3");//TODO comment out this line to actually use log in.
     }
@@ -60,6 +70,10 @@ public class AuthenticateActivity extends ActionBarActivity{
 
     private void setUpView(){
 
+        user = (EditText) findViewById(R.id.username_field);
+        pass = (EditText) findViewById(R.id.password_field);
+        stayLoggedInBox = (CheckBox) findViewById(R.id.stay_logged_in_box);
+
         // Setup toolbar/actionbar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -70,31 +84,32 @@ public class AuthenticateActivity extends ActionBarActivity{
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText userName = (EditText) findViewById(R.id.username_field);
-                EditText pass = (EditText) findViewById(R.id.password_field);
-                attemptLogin(userName.getText().toString(), pass.getText().toString());
+                Prefs.put(getApplicationContext(), Prefs.LAST_USER, user.getText().toString());
+                Prefs.put(getApplicationContext(),Prefs.LAST_PASS,pass.getText().toString());
+                attemptLogin(user.getText().toString(), pass.getText().toString());
             }
         });
+        stayLoggedInBox.setChecked(Prefs.get(getApplicationContext(),Prefs.AUTO_LOGIN));
     }
 
     private void attemptLogin(String attemptedUser, String attemptedPass){
 
+        Log.i("Auth", "U:"+attemptedUser+", P:"+attemptedPass);
+
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
+        if(this.getCurrentFocus()!=null)imm.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
 
         ProgressBar spinner = (ProgressBar) findViewById(R.id.auth_loading);
         spinner.setVisibility(View.VISIBLE);
 
-        //TODO attempt auth
-        EditText usrNameField = (EditText) findViewById(R.id.username_field);
-        String username = usrNameField.getText().toString();
-        EditText psswrdField = (EditText) findViewById(R.id.password_field);
-        String password = psswrdField.getText().toString();
-
-        new RetrieveFeedTask().execute(username, password);
+        new HttpPostTask().execute(attemptedUser, attemptedPass);
     }
 
     private void finishAuthenticationAttempt(HttpResponse response){
+        if(response == null){
+            authFail();
+            return;
+        }
 
         HttpEntity entity = response.getEntity();
 
@@ -109,7 +124,17 @@ public class AuthenticateActivity extends ActionBarActivity{
 
         Log.i("Auth", "Auth attempt successful?:" + success+", response:"+jObj);
 
-        if(success)goToMainActivity(userId);
+        if(success){
+            Prefs.put(getApplicationContext(),Prefs.AUTO_LOGIN,stayLoggedInBox.isChecked());
+            goToMainActivity(userId);
+        }
+        else authFail();
+    }
+
+    private void authFail(){
+        ProgressBar spinner = (ProgressBar) findViewById(R.id.auth_loading);
+        spinner.setVisibility(View.INVISIBLE);
+        Toast.makeText(getApplicationContext(),"Incorrect username/password. Please try again.",Toast.LENGTH_SHORT).show();
     }
 
     private void goToMainActivity(int authenticatedUser){
@@ -119,7 +144,7 @@ public class AuthenticateActivity extends ActionBarActivity{
         finish();
     }
 
-    class RetrieveFeedTask extends AsyncTask<String, Void, HttpResponse> {
+    class HttpPostTask extends AsyncTask<String, Void, HttpResponse> {
 
         protected HttpResponse doInBackground(String... args) {
             HttpClient httpclient = new DefaultHttpClient();
@@ -135,9 +160,9 @@ public class AuthenticateActivity extends ActionBarActivity{
                 // Execute HTTP Post Request
                 return httpclient.execute(httppost);
             } catch (ClientProtocolException e) {
-                // TODO Auto-generated catch block
+                e.printStackTrace();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
             return null;
         }

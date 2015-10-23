@@ -7,7 +7,8 @@
     <color name="overlay">#88000000</color>
     <color name="dark_overlay">#BB000000</color>
     <color name="text_color">#cfcfcf</color>
-    <color name="background">#000000</color>
+    <color name="text_sub_color">#818181</color>
+    <color name="background">#181818</color>
     <color name="background_slightly_lighter">#303030</color>
 
 

@@ -32,4 +32,6 @@
 
     <dimen name="divider_height">1dp</dimen>
 
+    <dimen name="live_data_item_height">48dp</dimen>
+
 </resources>
