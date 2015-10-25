@@ -12,6 +12,7 @@ from forms import LoginForm, RegisterForm
 from db_conn import DbRequest
 from date_utils import DateUtils 
 from user_utils import UserUtils
+import datetime
 
 app = Flask(__name__)
 app.debug = True;
@@ -34,6 +35,7 @@ GET_DATE_RANGE_DATA = "getDateRangeData"
 API_LOGIN = "apiLogin"
 API_REGISTER = "apiRegister"
 DATETIME_RANGE = "getDateTimeRange"
+LOAD_DATA = "loadData"
 
 
 @app.route("/")
@@ -130,6 +132,19 @@ def getDateTimeRange():
         request.args.get('endDateTime'), user_id,  int(request.args.get('dataGap')))
     return jsonify(**myDict)
 
+@app.route("/" + LOAD_DATA)
+def loadData():
+    heartRate = request.args.get("heartRate")
+    blood = request.args.get("bloodOxygen")
+    temp = request.args.get("temp")
+    user_id = request.args.get("user_id")
+    time = datetime.datetime.now()
+    if heartRate == None or blood == None or temp == None:
+        return jsonify(**{"error" : True})
+    query = "INSERT INTO `readings` (`user_id`, `time`,`blood_oxygen`, `heart_rate`, `temp`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}');" \
+        .format(user_id, time, blood, heartRate, temp)
+    result = db.query(query)
+    return jsonify(**{"error" : False})
 
 @app.route("/" + LIVE_DATA)
 def liveData():
@@ -146,6 +161,7 @@ def liveData():
     if request.args.get('chart') == 'oxygen':
         return render_template(LIVE_DATA + '.html', liveData="active", user=session['username'], oxygenActive='active')
     return render_template(LIVE_DATA + '.html', liveData="active", user=session['username'], heartActive='active')
+
 
 def oxygen_thread():
     # ser = serial.Serial('COM4', 9600, timeout=1)
@@ -177,4 +193,4 @@ def test_disconnect():
     print('Client disconnected')
 
 if __name__ == "__main__":
-    socketio.run(app, host='0.0.0.0', port=80)
+    socketio.run(app, host='0.0.0.0', port=8080)
