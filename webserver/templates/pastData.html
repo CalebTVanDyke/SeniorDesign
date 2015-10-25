@@ -1,9 +1,7 @@
 {% extends "_index.html" %}
 
 {% block scripts %}
-<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-datepicker3.min.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-datetimepicker.min.css') }}">
-<script src="{{ url_for('static', filename='bootstrap-datepicker.js') }}"></script>
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='moment.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='bootstrap-datetimepicker.js') }}"></script>
@@ -21,13 +19,10 @@ $(document).ready(function() {
 		dataGap = $(".data-gap").val()
 		startDateStr = getFormattedDate(startDate)
 		endDateStr = getFormattedDate(endDate)
-		console.log(startDateStr)
-		console.log(endDateStr)
 		$.ajax({
 			url: "{{url_for('getDateTimeRange')}}",
 			data: {'startDateTime': startDateStr, 'endDateTime': endDateStr, 'dataGap': dataGap},
 			success: function(result) {
-				console.log(result)
 				drawCharts(result)
 			}
 		})
