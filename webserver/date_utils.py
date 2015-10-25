@@ -18,9 +18,6 @@ class DateUtils:
 	def GetDataForDay(db, date, user_id, dataGap):
 		singleDayNoDate = 'No data was found for date: {0}.'
 		cmd = "SELECT * FROM `readings` WHERE DATE(time)='{0}' AND user_id={1}".format(date, user_id)
-		result = db.query(cmd)
-		if result == None:
-			return {"error" : singleDayNoDate.format(date)}
 		return applyDataFrequency(result, dataGap)
 
 	@staticmethod
@@ -29,8 +26,6 @@ class DateUtils:
 		cmd = "SELECT * FROM `readings` WHERE DATE(time) >= '{0}' AND DATE(time) <= '{1}' " \
 					"AND user_id={2} ORDER BY time asc".format(startDate, endDate, user_id)
 		result = db.query(cmd)
-		if result == None:
-			return {"error" : dateRangeNoData.format(startDate, endDate)}
 		return applyDataFrequency(result, dataGap)
 
 	@staticmethod
@@ -40,8 +35,6 @@ class DateUtils:
 					"AND user_id={2} ORDER BY time asc".format(startDateTime, endDateTime, user_id)
 		print cmd
 		result = db.query(cmd)
-		if result == None:
-			return {"error": dateRangeNoData.format(startDateTime, endDateTime)}
 		return applyDataFrequency(result, dataGap)
 		
 def applyDataFrequency(result, dataGap):
@@ -49,6 +42,8 @@ def applyDataFrequency(result, dataGap):
 	heartRate = []
 	temp = []
 	bloodOxygen = []
+	if result == None:
+		return {'heart_rate' : heartRate, 'temp' : temp, 'blood_oxygen' : bloodOxygen}
 	for item in result:
 		dt = time.mktime(datetime.datetime.strptime(item['time'], "%Y-%m-%d %H:%M:%S").timetuple())
 		if lastTime == 0 or dt - lastTime >= dataGap:
