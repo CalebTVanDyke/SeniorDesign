@@ -16,32 +16,32 @@ class DateUtils:
 
 	@staticmethod
 	def GetDataForDay(db, date, user_id, dataGap):
-		singleDayNoDate = '<div class="alert alert-warning" role="alert">No data was found for date: {0}.</div>'
+		singleDayNoDate = 'No data was found for date: {0}.'
 		cmd = "SELECT * FROM `readings` WHERE DATE(time)='{0}' AND user_id={1}".format(date, user_id)
 		result = db.query(cmd)
 		if result == None:
-			return singleDayNoDate.format(date)
+			return {"error" : singleDayNoDate.format(date)}
 		return applyDataFrequency(result, dataGap)
 
 	@staticmethod
 	def GetDataDateRange(db, startDate, endDate, user_id, dataGap):
-		dateRangeNoData = '<div class="alert alert-warning" role="alert">No data was found for date range: {0} to {1}.</div>'
+		dateRangeNoData = 'role="alert">No data was found for date range: {0} to {1}.'
 		cmd = "SELECT * FROM `readings` WHERE DATE(time) >= '{0}' AND DATE(time) <= '{1}' " \
 					"AND user_id={2} ORDER BY time asc".format(startDate, endDate, user_id)
 		result = db.query(cmd)
 		if result == None:
-			return dateRangeNoData.format(startDate, endDate)
+			return {"error" : dateRangeNoData.format(startDate, endDate)}
 		return applyDataFrequency(result, dataGap)
 
 	@staticmethod
 	def GetDataDateTimeRange(db, startDateTime, endDateTime, user_id, dataGap):
-		dateRangeNoData = '<div class="alert alert-warning" role="alert">No data was found for date range: {0} to {1}.</div>'
+		dateRangeNoData = 'No data was found for date range: {0} to {1}.'
 		cmd = "SELECT * FROM `readings` WHERE time >= '{0}' AND time <= '{1}' " \
 					"AND user_id={2} ORDER BY time asc".format(startDateTime, endDateTime, user_id)
 		print cmd
 		result = db.query(cmd)
 		if result == None:
-			return dateRangeNoData.format(startDateTime, endDateTime)
+			return {"error": dateRangeNoData.format(startDateTime, endDateTime)}
 		return applyDataFrequency(result, dataGap)
 		
 def applyDataFrequency(result, dataGap):
