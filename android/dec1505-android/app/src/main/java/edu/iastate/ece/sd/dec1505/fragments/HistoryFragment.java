@@ -261,10 +261,15 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
             else itemView = new HistoryItemView(viewGroup.getContext(),false);
 
             Reading toView = readings.get(i);
-            if(i==0 || !dateFormat.format(toView.getDateObject()).equals(dateFormat.format(readings.get(i-1).getDateObject()))){
-                itemView.setHeader(dateFormat.format(toView.getDateObject()));
-            }
-            itemView.setTimeText(dateFormat.format(toView.getDateObject())+"\n"+timeFormat.format(toView.getDateObject()));
+
+            //Header stuff
+            String dateStr = dateFormat.format(toView.getDateObject()), dateStrPrev = "x";
+            if(i!=0)dateStrPrev = dateFormat.format(readings.get(i-1).getDateObject());
+            if(!dateStr.equals(dateStrPrev))itemView.setHeader(dateStr);
+            else{itemView.hideHeader();}
+
+            //ItemView stuff
+            itemView.setTimeText(timeFormat.format(toView.getDateObject()));
             itemView.setBloodOxyView("" + toView.getBlooxOxygenForUI());
             itemView.setHeartView("" + toView.getHeartRateForUI());
             itemView.setTempView(""+toView.getTempForUI());

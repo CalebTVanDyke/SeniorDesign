@@ -84,4 +84,8 @@ public class HistoryItemView extends RelativeLayout {
         headerView.setHeaderName(header);
         headerView.setVisibility(View.VISIBLE);
     }
+
+    public void hideHeader() {
+        headerView.setVisibility(View.GONE);
+    }
 }
