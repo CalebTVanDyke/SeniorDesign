@@ -17,6 +17,7 @@ public class HistoryItemView extends RelativeLayout {
 
     View root;
     LinearLayout itemLayoutWrapper;
+    ListHeaderView headerView;
 
     public HistoryItemView(Context context, boolean clickable) {
         super(context);
@@ -54,6 +55,7 @@ public class HistoryItemView extends RelativeLayout {
         if (root != null) {
             itemLayoutWrapper = (LinearLayout) root.findViewById(R.id.list_item_text_wrapper);
             if (!clickable) itemLayoutWrapper.setBackgroundResource(R.color.background);
+            headerView = (ListHeaderView) root.findViewById(R.id.history_item_header);
         }
     }
 
@@ -76,5 +78,10 @@ public class HistoryItemView extends RelativeLayout {
     public void setTempView(String tempView) {
         TextView tv = (TextView)findViewById(R.id.temp_header_label);
         tv.setText(tempView);
+    }
+
+    public void setHeader(String header) {
+        headerView.setHeaderName(header);
+        headerView.setVisibility(View.VISIBLE);
     }
 }

@@ -21,4 +21,10 @@
         <attr name="text3" format="string" />
     </declare-styleable>
 
+    <declare-styleable name="ListHeaderView">
+        <attr name="headerText" format="string"/>
+        <attr name="text_color" format="color"/>
+        <attr name="headerBgColor" format="color"/>
+    </declare-styleable>
+
 </resources>
