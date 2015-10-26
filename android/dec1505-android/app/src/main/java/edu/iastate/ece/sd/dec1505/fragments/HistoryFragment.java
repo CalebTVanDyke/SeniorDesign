@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.DatePicker;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -38,6 +37,9 @@ import edu.iastate.ece.sd.dec1505.R;
 import edu.iastate.ece.sd.dec1505.models.Reading;
 import edu.iastate.ece.sd.dec1505.tools.DefaultRequestQueue;
 import edu.iastate.ece.sd.dec1505.views.HistoryItemView;
+import edu.iastate.ece.sd.dec1505.views.ListHeaderView;
+import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
+import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 public class HistoryFragment extends ApplicationFragment implements Runnable{
 
@@ -48,7 +50,7 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
     final int REQUEST_TIMEOUT = 10000;
     String dataUrl="";
     ArrayList<Reading> readings = new ArrayList<>();
-    ListView historyListView;
+    StickyListHeadersListView historyListView;
     HistoryDataAdapter historyDataAdapter;
 
     static TextView fromDateView, toDateView, fromTimeView, toTimeView;
@@ -57,7 +59,7 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
     ProgressBar progBar;
 
     static SimpleDateFormat timeFormat;
-    static final SimpleDateFormat dateFormat = new SimpleDateFormat("M/d/y"),
+    static final SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/y"),
             twntyFourHrFrmt = new SimpleDateFormat("H:mm"),
             twelveHrFormat = new SimpleDateFormat("h:mm a");
 
@@ -80,7 +82,7 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
         fromTimeView.setOnClickListener(getTimeOnClick(fromTimeView, true));
         toTimeView.setOnClickListener(getTimeOnClick(toTimeView, false));
 
-        historyListView = (ListView) rootView.findViewById(R.id.history_data_list);
+        historyListView = (StickyListHeadersListView) rootView.findViewById(R.id.history_data_list);
         historyDataAdapter = new HistoryDataAdapter();
         historyListView.setAdapter(historyDataAdapter);
     }
@@ -236,7 +238,24 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
         };
     }
 
-    class HistoryDataAdapter extends BaseAdapter{
+    class HistoryDataAdapter extends BaseAdapter implements StickyListHeadersAdapter{
+
+        @Override
+        public View getHeaderView(int position, View convertView, ViewGroup parent) {
+            ListHeaderView dateHeader;
+            if(convertView !=null){
+                dateHeader = (ListHeaderView) convertView;
+            }else{
+                dateHeader = new ListHeaderView(getActivity());
+            }
+            dateHeader.setHeaderName(dateFormat.format(readings.get(position).getDateObject()));
+            return dateHeader;
+        }
+
+        @Override
+        public long getHeaderId(int position) {
+            return dateFormat.format(readings.get(position).getDateObject()).charAt(4);
+        }
 
         @Override
         public int getCount() {
@@ -249,9 +268,7 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
         }
 
         @Override
-        public long getItemId(int i) {
-            return i;
-        }
+        public long getItemId(int i) {return i;}
 
         @Override
         public View getView(int i, View recycleView, ViewGroup viewGroup) {
@@ -261,24 +278,21 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
             else itemView = new HistoryItemView(viewGroup.getContext(),false);
 
             Reading toView = readings.get(i);
-            if(i==0 || !dateFormat.format(toView.getDateObject()).equals(dateFormat.format(readings.get(i-1).getDateObject()))){
-                itemView.setHeader(dateFormat.format(toView.getDateObject()));
-            }
-            itemView.setTimeText(dateFormat.format(toView.getDateObject())+"\n"+timeFormat.format(toView.getDateObject()));
+            itemView.setTimeText(timeFormat.format(toView.getDateObject()));
             itemView.setBloodOxyView("" + toView.getBlooxOxygenForUI());
             itemView.setHeartView("" + toView.getHeartRateForUI());
-            itemView.setTempView(""+toView.getTempForUI());
+            itemView.setTempView("" + toView.getTempForUI());
 
             return itemView;
         }
 
         public void setToTop() {
-            ListView dataList = (ListView)findViewById(R.id.history_data_list);
+            StickyListHeadersListView dataList = (StickyListHeadersListView)findViewById(R.id.history_data_list);
             dataList.setSelectionAfterHeaderView();
         }
 
         public void setListVisibility(int visibility){
-            ListView dataList = (ListView)findViewById(R.id.history_data_list);
+            StickyListHeadersListView dataList = (StickyListHeadersListView)findViewById(R.id.history_data_list);
             dataList.setVisibility(visibility);
         }
     }

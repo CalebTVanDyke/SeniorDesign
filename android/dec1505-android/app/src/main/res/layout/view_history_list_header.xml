@@ -35,7 +35,7 @@
             android:gravity="center"
             android:text="Blood Ox."
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@color/primary_dark_color"
+            android:textColor="@color/primary_color"
             android:textStyle="bold"
             android:visibility="visible" />
 
@@ -48,7 +48,7 @@
             android:gravity="center"
             android:text="Heart Rate"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@color/primary_dark_color"
+            android:textColor="@color/primary_color"
             android:textStyle="bold"
             android:visibility="visible" />
 
@@ -60,7 +60,7 @@
             android:gravity="center"
             android:text="Body Temp"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@color/primary_dark_color"
+            android:textColor="@color/primary_color"
             android:textStyle="bold"
             android:visibility="visible" />
 

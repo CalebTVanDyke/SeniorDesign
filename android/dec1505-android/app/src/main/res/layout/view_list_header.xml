@@ -16,17 +16,17 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:background="@color/background_slightly_lighter"
-        android:layout_height="@dimen/list_item_header"
+        android:background="@color/background"
+        android:layout_height="@dimen/list_item_header_small"
         android:paddingRight="@dimen/padding_large"
         android:paddingEnd="@dimen/padding_large"
-        android:paddingLeft="@dimen/padding_large"
-        android:paddingStart="@dimen/padding_large">
+        android:paddingLeft="@dimen/padding_large">
 
         <TextView
             android:id="@+id/header_name"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/list_item_header"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:gravity="center_vertical"
             android:clickable="false"
             android:textSize="16sp"
