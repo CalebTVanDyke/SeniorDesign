@@ -1,6 +1,7 @@
 from flask.ext.wtf import Form
 from wtforms import TextField, PasswordField, validators
 from user_utils import UserUtils
+from flask import session
 
 
 class LoginForm(Form):
@@ -36,3 +37,22 @@ class RegisterForm(Form):
                 self.username.errors.append('User name is already taken. Please select another.')
                 return False
         return True;
+
+class ChangePasswordForm(Form):
+    old_password = PasswordField('Current Password', [validators.Required()])
+    new_password = PasswordField('New Password', [
+        validators.Required(),
+        validators.EqualTo('confirm', message='Passwords must match')
+    ])
+    confirm = PasswordField('Repeat New Password')
+
+    def validate(self, db):
+        rv = Form.validate(self)
+        if not rv:
+            return False
+        else:
+            if UserUtils.change_password(db, session["user_id"], self.old_password.data, self.new_password.data):
+                return True
+            else:
+                self.old_password.errors.append('Current password was not correct.')
+                return False

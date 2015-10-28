@@ -8,7 +8,7 @@ from flask import Flask, flash, redirect, url_for, session, render_template, req
 from flask.ext.socketio import SocketIO, emit
 from threading import Thread
 from random import randint
-from forms import LoginForm, RegisterForm
+from forms import LoginForm, RegisterForm, ChangePasswordForm
 from db_conn import DbRequest
 from date_utils import DateUtils 
 from user_utils import UserUtils
@@ -36,6 +36,7 @@ API_LOGIN = "apiLogin"
 API_REGISTER = "apiRegister"
 DATETIME_RANGE = "getDateTimeRange"
 LOAD_DATA = "loadData"
+CHANGE_PASSWORD = "changePassword"
 
 
 @app.route("/")
@@ -145,6 +146,24 @@ def loadData():
         .format(user_id, time, blood, heartRate, temp)
     result = db.query(query)
     return jsonify(**{"error" : False})
+
+@app.route("/" + CHANGE_PASSWORD, methods=['GET', 'POST'])
+def changePassword():
+    form = ChangePasswordForm(request.form)
+    if request.method == 'POST':
+        if form.validate(db):
+            return render_template(CHANGE_PASSWORD + '.html', 
+                form=form, 
+                passActive="active", 
+                message='Password changed successfully',
+                user=session['username'])
+    return render_template(CHANGE_PASSWORD + '.html', 
+        form=form, 
+        passActive="active", 
+        hidden='hidden', 
+        settings="active",
+        user=session['username'])
+
 
 @app.route("/" + LIVE_DATA)
 def liveData():
