@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/header_view_container"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <View
+        android:visibility="gone"
+        android:layout_marginTop="@dimen/padding_medium"
+        android:id="@+id/header_top_separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/divider" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:background="@color/background"
+        android:layout_height="@dimen/list_item_header_small"
+        android:paddingRight="@dimen/padding_large"
+        android:paddingEnd="@dimen/padding_large"
+        android:paddingLeft="@dimen/padding_large">
+
+        <TextView
+            android:id="@+id/header_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center_vertical"
+            android:clickable="false"
+            android:textSize="16sp"
+            android:text="Header"
+            android:textColor="@color/primary_color"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/header_right_action_holder"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:gravity="center"
+            android:visibility="gone">
+            <ImageView
+                android:id="@+id/header_right_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/header_right_action"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textSize="16sp"
+                android:textColor="@color/primary_color"
+                android:text="Search"
+                android:gravity="center"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>

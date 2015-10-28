@@ -1,5 +1,6 @@
 package edu.iastate.ece.sd.dec1505.models;
 
+import android.text.format.DateFormat;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -10,6 +11,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
+import edu.iastate.ece.sd.dec1505.fragments.HistoryFragment;
 
 /**
  * A reading consists of a timestamp and 3 data types recorded at that exact time.
@@ -28,7 +31,7 @@ public class Reading {
         time = parseTime(timeString);
     }
 
-    private String getTimeStr(){return timeStr;}
+    public String getTimeStr(){return timeStr;}
     public int getBlooxOxygen(){return blooxOx;}
     public int getHeartRate(){
         return heart;
@@ -42,10 +45,10 @@ public class Reading {
     public void setBodyTemp(double bodyTemp){temp = bodyTemp;}
 
     private Date parseTime(String timeString) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dateInFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date toReturn = null;
         try{
-            toReturn = simpleDateFormat.parse(timeString);
+            toReturn = dateInFormat.parse(timeString);
         }catch (ParseException e){Log.e("Reading","Failed to parse time. "+e.toString());}
         return toReturn;
     }
@@ -66,16 +69,6 @@ public class Reading {
 
     public String getHeartRateForUI(){
         return padBeginningOfString(heart+"",3);
-    }
-
-    public String getTimeOfDay(){
-        SimpleDateFormat sdf;
-
-        //TODO
-        //sdf = new SimpleDateFormat("HH:mm:ss");//24 hour format
-        sdf = new SimpleDateFormat("h:mm:ss a");//12 hour format
-
-        return padBeginningOfString(sdf.format(time),11);
     }
 
     private String padBeginningOfString(String string, int desiredLength) {
@@ -102,7 +95,6 @@ public class Reading {
                 JSONObject readJSONObj = jArr.getJSONObject(i);
                 bloodOx = readJSONObj.getInt("blood_oxygen");
                 time = readJSONObj.getString("time");
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 //Log.d("History", "At " + time + ", SPO2: " + bloodOx);
                 tmpReading = new Reading(time);
                 tmpReading.setBloodOxygen(bloodOx);
@@ -134,4 +126,6 @@ public class Reading {
         } catch (Exception e) {e.printStackTrace();}
         return readingList;
     }
+
+    public Date getDateObject() {return time;}
 }

@@ -29,7 +29,7 @@
                 android:layout_height="@dimen/list_item_header_small"
                 android:layout_marginRight="@dimen/padding_medium"
                 android:text="08/01/2015"
-                android:textColor="@color/primary_dark_color"
+                android:textColor="@color/primary_color"
                 android:gravity="center"
                 android:textStyle="bold"
                 android:layout_weight="2"
@@ -49,7 +49,7 @@
                 android:layout_width="0dp"
                 android:layout_height="@dimen/list_item_header_small"
                 android:text="9:30pm"
-                android:textColor="@color/primary_dark_color"
+                android:textColor="@color/primary_color"
                 android:gravity="center"
                 android:textStyle="bold"
                 android:layout_weight="2"
@@ -75,7 +75,7 @@
                 android:layout_width="0dp"
                 android:layout_height="@dimen/list_item_header_small"
                 android:text="08/02/2015"
-                android:textColor="@color/primary_dark_color"
+                android:textColor="@color/primary_color"
                 android:gravity="center"
                 android:textStyle="bold"
                 android:layout_weight="2"
@@ -95,7 +95,7 @@
                 android:layout_width="0dp"
                 android:layout_height="@dimen/list_item_header_small"
                 android:text="6:30am"
-                android:textColor="@color/primary_dark_color"
+                android:textColor="@color/primary_color"
                 android:gravity="center"
                 android:textStyle="bold"
                 android:layout_weight="2"
@@ -129,7 +129,7 @@
                 android:layout_width="0dp"
                 android:layout_height="@dimen/list_item_header_small"
                 android:text="Load Data"
-                android:textColor="@color/primary_dark_color"
+                android:textColor="@color/white"
                 android:gravity="center"
                 android:textStyle="bold"
                 android:layout_weight="1"
@@ -145,12 +145,12 @@
         android:id="@+id/history_labels_header">
     </edu.iastate.ece.sd.dec1505.views.HistoryItemListHeader>
 
-    <ListView
+    <se.emilsjolander.stickylistheaders.StickyListHeadersListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/history_data_list"
         android:fastScrollEnabled="true"
-        android:layout_below="@id/history_labels_header"></ListView>
+        android:layout_below="@id/history_labels_header"></se.emilsjolander.stickylistheaders.StickyListHeadersListView>
 
     <RelativeLayout
         android:layout_width="match_parent"
