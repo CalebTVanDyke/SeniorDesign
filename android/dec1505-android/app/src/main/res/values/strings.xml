@@ -11,6 +11,7 @@
     <string name="app_descrip">This is an app designed by the dec15-05 group to monitor live device date, as well as view data history.</string>
     <string name="live_data_info">This section of the application allows you to view the data as it is read by the sensors.</string>
     <string name="history_info">This section of the application allows you to view previous readings for a specific time window and of the desired frequency.</string>
+    <string name="settings">This section of the application allows you to change personal configurations.</string>
 
     <string-array name="hist_freq_choices">
         <item>1 min</item>
