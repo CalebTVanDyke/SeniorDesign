@@ -31,8 +31,19 @@ class UserUtils:
 		else:
 			return False
 
-def hashUser(user_id):
-    return user_id + '|' + hmac.new(SECRET, user_id).hexdigest()
+	@staticmethod
+	def change_password(db, user_id, old_password, new_password):
+		cmd = "SELECT password_hash, username FROM `users` WHERE id=\'{0}\';".format(user_id)
+		result = db.query(cmd)
+		if result == None:
+			return False
+		username = result[0]['username']
+		if valid_pw(username, old_password, result[0]['password_hash']):
+			pass_hash = make_pw_hash(username, new_password)
+			cmd = "UPDATE `users` SET password_hash='{0}'".format(pass_hash)
+			result = db.query(cmd)
+			return True
+		return False
 
 def make_pw_hash(name, pw, salt=None):
     if not salt:

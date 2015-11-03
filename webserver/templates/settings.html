@@ -1,5 +1,14 @@
 {% extends "_index.html" %}
 
 {% block content %}
-	<h3>Settings</h3>
+<h3>Settings</h3>
+
+<ul class="nav nav-tabs">
+	<li role="presentation" class="{{generalActive}}"><a href="#">General</a></li>
+	<li role="presentation" class="{{passActive}}"><a href="{{ url_for('changePassword') }}">Change Password</a></li>
+</ul>
+<div class="main-content">
+	{% block mainContent %}
+	{% endblock %}
+</div>
 {% endblock %}
