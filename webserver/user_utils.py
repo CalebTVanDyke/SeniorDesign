@@ -4,6 +4,12 @@ import random
 import string
 from flask import session
 
+class User:
+	def __init__(self, username, primary_phone, primary_email):
+		self.username = username
+		self.primary_phone = primary_phone
+		self.primary_email = primary_email
+
 class UserUtils:
 	
 	@staticmethod
@@ -44,6 +50,24 @@ class UserUtils:
 			result = db.query(cmd)
 			return True
 		return False
+
+	@staticmethod
+	def get_user_info(db, user_id):
+		cmd = "SELECT username, phone, email FROM `users` WHERE id=\'{0}\';".format(user_id)
+		result = db.query(cmd)
+		if result == None:
+			return None
+		username = result[0]['username']
+		primary_email = result[0]['email']
+		primary_phone = result[0]['phone']
+		return User(username, primary_phone, primary_email)
+
+	@staticmethod
+	def save_user_info(db, user_id, primary_phone, primary_email):
+		cmd = "UPDATE `users` SET `phone`='{0}', email='{1}' WHERE id={2};".format(primary_phone, primary_email, user_id)
+		print cmd
+		db.query(cmd)
+		return True
 
 def make_pw_hash(name, pw, salt=None):
     if not salt:

@@ -8,10 +8,10 @@ from flask import Flask, flash, redirect, url_for, session, render_template, req
 from flask.ext.socketio import SocketIO, emit
 from threading import Thread
 from random import randint
-from forms import LoginForm, RegisterForm, ChangePasswordForm
+from forms import LoginForm, RegisterForm, ChangePasswordForm, GeneralSettingForm
 from db_conn import DbRequest
 from date_utils import DateUtils 
-from user_utils import UserUtils
+from user_utils import UserUtils, User
 import datetime
 
 app = Flask(__name__)
@@ -37,6 +37,8 @@ API_REGISTER = "apiRegister"
 DATETIME_RANGE = "getDateTimeRange"
 LOAD_DATA = "loadData"
 CHANGE_PASSWORD = "changePassword"
+CHANGE_PASSWORD_API = "changePasswordApi"
+GENERAL_SETTINGS = "generalSettings"
 
 
 @app.route("/")
@@ -82,12 +84,6 @@ def pastData():
     return render_template(PAST_DATA + '.html', 
         pastData="active", user=session['username'], 
         dates=DateUtils.GetAvailableDates(db, session['user_id']))
-
-@app.route("/" + SETTINGS)
-def settings():
-    if 'username' not in session or session['username'] == None:
-        return redirect(url_for(LOGIN))
-    return render_template(SETTINGS + '.html', settings="active", user=session['username'])
 
 @app.route("/" + GET_DAY_DATA)
 def getDayData():
@@ -163,6 +159,44 @@ def changePassword():
         hidden='hidden', 
         settings="active",
         user=session['username'])
+
+@app.route("/" + GENERAL_SETTINGS, methods=['GET', 'POST'])
+def generalSettings():
+    form = GeneralSettingForm(request.form)
+    if request.method == 'POST':
+        if form.validate(db):
+            UserUtils.save_user_info(db, session['user_id'], form.primary_phone.data, form.primary_email.data)
+            return render_template(GENERAL_SETTINGS + '.html',
+                form=form,
+                generalActive='active',
+                message="Settings saved successfully.",
+                settings='active',
+                user=session['username'])
+        else:
+            return render_template(GENERAL_SETTINGS + '.html',
+                form=form,
+                generalActive='active',
+                hidden='hidden',
+                settings='active',
+                user=session['username'])
+    info = UserUtils.get_user_info(db, session["user_id"])
+    form.primary_email.data = info.primary_email
+    form.primary_phone.data = info.primary_phone
+    return render_template(GENERAL_SETTINGS + '.html',
+        form=form,
+        generalActive='active',
+        hidden='hidden',
+        settings='active',
+        user=session['username'])
+
+@app.route("/" + CHANGE_PASSWORD_API, methods=['GET', 'POST'])
+def changePasswordApi():
+    user_id = request.form['user_id']
+    old_password = request.form['old_password']
+    new_password = request.form['new_password']
+    if UserUtils.change_password(db, user_id, old_password, new_password):
+        return jsonify(**{"error" : False})
+    return jsonify(**{"error" : True})
 
 
 @app.route("/" + LIVE_DATA)

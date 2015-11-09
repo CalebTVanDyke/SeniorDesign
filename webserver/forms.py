@@ -56,3 +56,16 @@ class ChangePasswordForm(Form):
             else:
                 self.old_password.errors.append('Current password was not correct.')
                 return False
+
+class GeneralSettingForm(Form):
+    primary_email = TextField('Primary E-mail', [
+        validators.Required(),
+        validators.Email(message="Invalid Email")])
+    primary_phone = TextField('Primary Phone', [validators.Required()])
+
+    def validate(self, db):
+        rv = Form.validate(self)
+        if not rv:
+            return False
+        else:
+            return True
