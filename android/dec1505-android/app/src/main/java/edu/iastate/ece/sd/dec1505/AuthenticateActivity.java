@@ -141,6 +141,7 @@ public class AuthenticateActivity extends ActionBarActivity{
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.putExtra(USERID, authenticatedUser);
         startActivity(intent);
+        Prefs.put(getApplicationContext(), Prefs.CURR_USR_ID, ""+authenticatedUser);
         finish();
     }
 

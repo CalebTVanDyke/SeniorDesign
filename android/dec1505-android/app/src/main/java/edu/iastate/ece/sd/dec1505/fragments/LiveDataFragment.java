@@ -76,7 +76,7 @@ public class LiveDataFragment extends ApplicationFragment implements Runnable{
         RelativeLayout rl = (RelativeLayout) findViewById(R.id.live_data_wrapper);
         Window window = getSupportActivity().getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        //window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         if (nightMode) {
             nightModeButton.setText("Night");
             nightModeButton.setTextColor(Color.WHITE);
@@ -89,7 +89,7 @@ public class LiveDataFragment extends ApplicationFragment implements Runnable{
         }
         else{
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.primary_color)));
-            rl.setBackgroundColor(Color.TRANSPARENT);
+            rl.setBackgroundColor(getResources().getColor(R.color.background));
             nightModeButton.setText("Day");
             nightModeButton.setTextColor(Color.BLACK);
             nightModeButton.setBackground(btnBackground);

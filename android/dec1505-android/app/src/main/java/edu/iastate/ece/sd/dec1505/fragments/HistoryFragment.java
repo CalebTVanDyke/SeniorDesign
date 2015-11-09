@@ -46,7 +46,7 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
     int userId;
     final String BASE_DATA_URL =  "http://cvandyke.ddns.net/getDateTimeRange?";
 
-    final String DEBUG_URL = "http://cvandyke.ddns.net/getDateTimeRange?startDateTime=2015-08-01%2021:30:00&endDateTime=2015-08-02%2007:00:00&user_id=3&dataGap=600";
+    final String DEBUG_URL = "http://cvandyke.ddns.net/getDateTimeRange?startDateTime=2015-08-01%2021:30:00&endDateTime=2015-08-08%2007:00:00&user_id=3&dataGap=3600";
     final int REQUEST_TIMEOUT = 10000;
     String dataUrl="";
     ArrayList<Reading> readings = new ArrayList<>();
@@ -206,7 +206,7 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
     }
 
     private void parseData(String data){
-        Log.d("Data","Data Received: "+data);
+        //Log.d("Data","Data Received: "+data);
         readings = Reading.parseData(data);
         progBar.setVisibility(View.GONE);
         historyDataAdapter.setListVisibility(View.VISIBLE);

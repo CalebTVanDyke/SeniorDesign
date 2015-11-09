@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import edu.iastate.ece.sd.dec1505.fragments.HistoryFragment;
 import edu.iastate.ece.sd.dec1505.fragments.HomeFragment;
 import edu.iastate.ece.sd.dec1505.fragments.LiveDataFragment;
+import edu.iastate.ece.sd.dec1505.fragments.SettingsFragment;
 
 public class Navigation {
 
@@ -17,6 +18,7 @@ public class Navigation {
         // Add fragmentItems here
         add("Live Data", LiveDataFragment.class);
         add("History", HistoryFragment.class);
+        add("Settings", SettingsFragment.class);
         add("Log Out", null);
 
 
