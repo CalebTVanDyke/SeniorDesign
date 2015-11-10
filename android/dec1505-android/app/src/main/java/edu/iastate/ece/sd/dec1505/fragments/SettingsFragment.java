@@ -4,7 +4,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -99,6 +98,6 @@ public class SettingsFragment extends ApplicationFragment{
 
     private void parseData(String data){
         Log.i("Settings data",data);
-        
+
     }
 }
