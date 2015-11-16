@@ -1,8 +1,11 @@
 from flask.ext.wtf import Form
-from wtforms import TextField, PasswordField, validators
+from wtforms import TextField, PasswordField, validators, SelectField
 from user_utils import UserUtils
 from flask import session
+from carrier_map import CarrierMap
 
+
+cmap = CarrierMap()
 
 class LoginForm(Form):
     username = TextField('Username', [validators.Required()])
@@ -69,3 +72,18 @@ class GeneralSettingForm(Form):
             return False
         else:
             return True
+
+class AlertSettingsForm(Form):
+    email = TextField('E-mail', [validators.optional(), validators.Email(message="Invalid Email")])
+    phone = TextField('Phone', [validators.optional()])
+    carrier = SelectField('Carrier', choices=cmap.getInputList())
+
+    def validate(self):
+        rv = Form.validate(self)
+        if not rv:
+            return False
+        if self.email.data == "" and self.phone.data == "":
+            self.email.errors.append('Please enter either an email or a phone number and carrier')
+            return False
+        return True
+        

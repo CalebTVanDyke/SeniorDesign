@@ -8,11 +8,12 @@ from flask import Flask, flash, redirect, url_for, session, render_template, req
 from flask.ext.socketio import SocketIO, emit
 from threading import Thread
 from random import randint
-from forms import LoginForm, RegisterForm, ChangePasswordForm, GeneralSettingForm
+from forms import LoginForm, RegisterForm, ChangePasswordForm, GeneralSettingForm, AlertSettingsForm
 from db_conn import DbRequest
 from date_utils import DateUtils 
-from user_utils import UserUtils, User
+from user_utils import UserUtils, User, Receiver
 import datetime
+
 
 app = Flask(__name__)
 app.debug = True;
@@ -39,6 +40,7 @@ LOAD_DATA = "loadData"
 CHANGE_PASSWORD = "changePassword"
 CHANGE_PASSWORD_API = "changePasswordApi"
 GENERAL_SETTINGS = "generalSettings"
+ALERT_SETTINGS = "alertSettings"
 
 
 @app.route("/")
@@ -189,6 +191,26 @@ def generalSettings():
         settings='active',
         user=session['username'])
 
+@app.route("/" + ALERT_SETTINGS, methods=['GET', 'POST'])
+def alertSettings():
+    form = AlertSettingsForm(request.form)
+    info = UserUtils.get_user_info(db, session["user_id"])
+    if request.method == 'POST':
+        if form.validate():
+            if form.phone.data != "":
+
+            print form.phone.data == ""
+            print form.email.data == ""
+    return render_template(ALERT_SETTINGS + '.html',
+        form=form,
+        alertActive='active',
+        settings='active',
+        user=session['username'],
+        hidden='hidden',
+        receivers=info.receivers)
+
+    
+
 @app.route("/" + CHANGE_PASSWORD_API, methods=['GET', 'POST'])
 def changePasswordApi():
     user_id = request.form['user_id']
@@ -197,6 +219,8 @@ def changePasswordApi():
     if UserUtils.change_password(db, user_id, old_password, new_password):
         return jsonify(**{"error" : False})
     return jsonify(**{"error" : True})
+
+
 
 
 @app.route("/" + LIVE_DATA)
@@ -246,4 +270,4 @@ def test_disconnect():
     print('Client disconnected')
 
 if __name__ == "__main__":
-    socketio.run(app, host='0.0.0.0', port=80)
+    socketio.run(app, host='0.0.0.0', port=8080)

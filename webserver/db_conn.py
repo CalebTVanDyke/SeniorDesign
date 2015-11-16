@@ -11,7 +11,6 @@ class DbRequest:
 		response = conn.getresponse()
 		jsonStr = response.read()
 		conn.close()
-		print jsonStr
 		if (jsonStr != None and jsonStr != ""):
 			return json.loads(jsonStr)
 		return None

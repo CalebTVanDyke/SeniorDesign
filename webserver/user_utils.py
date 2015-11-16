@@ -3,12 +3,31 @@ import hashlib
 import random
 import string
 from flask import session
+from carrier_map import CarrierMap
+
+cmap = CarrierMap()
 
 class User:
-	def __init__(self, username, primary_phone, primary_email):
+	"""All of the info for a user.  receivers is in a coma seperated string"""
+	def __init__(self, username, primary_phone, primary_email, receivers):
 		self.username = username
 		self.primary_phone = primary_phone
 		self.primary_email = primary_email
+		splitRec = receivers.split(",")
+		self.receivers = []
+		for rec in splitRec:
+			split = rec.split("@")
+			self.receivers.append(Receiver(split[0], split[1]))
+
+
+class Receiver:
+	def __init__(self, data, email):
+		self.data = data
+		self.isPhone = False
+		if cmap.getCarrierFromEmail(email) != None:
+			self.isPhone = True
+			self.carrier = cmap.getCarrierFromEmail(email)
+		
 
 class UserUtils:
 	
@@ -53,21 +72,25 @@ class UserUtils:
 
 	@staticmethod
 	def get_user_info(db, user_id):
-		cmd = "SELECT username, phone, email FROM `users` WHERE id=\'{0}\';".format(user_id)
+		cmd = "SELECT username, phone, email, receivers FROM `users` WHERE id=\'{0}\';".format(user_id)
 		result = db.query(cmd)
 		if result == None:
 			return None
 		username = result[0]['username']
 		primary_email = result[0]['email']
 		primary_phone = result[0]['phone']
-		return User(username, primary_phone, primary_email)
+		receivers = result[0]['receivers']
+		return User(username, primary_phone, primary_email, receivers)
 
 	@staticmethod
 	def save_user_info(db, user_id, primary_phone, primary_email):
 		cmd = "UPDATE `users` SET `phone`='{0}', email='{1}' WHERE id={2};".format(primary_phone, primary_email, user_id)
-		print cmd
 		db.query(cmd)
 		return True
+
+	@staticmethod
+	def save_user_recievers(receivers):
+		pass
 
 def make_pw_hash(name, pw, salt=None):
     if not salt:

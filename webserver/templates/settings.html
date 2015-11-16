@@ -5,10 +5,12 @@
 
 <ul class="nav nav-tabs">
 	<li role="presentation" class="{{generalActive}}"><a href="{{ url_for('generalSettings') }}">General</a></li>
+	<li role="presentation" class="{{alertActive}}"><a href="#">Alert Settings</a></li>
 	<li role="presentation" class="{{passActive}}"><a href="{{ url_for('changePassword') }}">Change Password</a></li>
 </ul>
 <div class="main-content">
 	{% block mainContent %}
+	
 	{% endblock %}
 </div>
 {% endblock %}
