@@ -19,14 +19,35 @@ class User:
 			split = rec.split("@")
 			self.receivers.append(Receiver(split[0], split[1]))
 
+	def receiver_string(self):
+		combined = ""
+		for i in range(len(self.receivers)):
+			if i == len(self.receivers) - 1:
+				combined += self.receivers[i].email
+			else:
+				combined += self.receivers[i].email + ","
+		return combined
+
+	def add_receiver(self, receiverStr):
+		split = receiverStr.split("@")
+		self.receivers.append(Receiver(split[0], split[1]))
+
+	def delete_receiver(self, receiverStr):
+		split = receiverStr.split("@")
+		rec = Receiver(split[0], split[1])
+		self.receivers.remove(rec)
+
 
 class Receiver:
 	def __init__(self, data, email):
 		self.data = data
 		self.isPhone = False
+		self.email = data + "@" + email
 		if cmap.getCarrierFromEmail(email) != None:
 			self.isPhone = True
 			self.carrier = cmap.getCarrierFromEmail(email)
+	def __eq__(self, other):
+		return self.email == other.email
 		
 
 class UserUtils:
@@ -89,8 +110,21 @@ class UserUtils:
 		return True
 
 	@staticmethod
-	def save_user_recievers(receivers):
-		pass
+	def add_receiver(db, data, user_id):
+		user = UserUtils.get_user_info(db, user_id)
+		user.add_receiver(data)
+		cmd = "UPDATE `users` SET `receivers`='{0}' WHERE id={1};".format(user.receiver_string(), user_id)
+		db.query(cmd)
+		return True
+
+	@staticmethod
+	def delete_receiver(db, data, user_id):
+		user = UserUtils.get_user_info(db, user_id)
+		user.delete_receiver(data)
+		cmd = "UPDATE `users` SET `receivers`='{0}' WHERE id={1};".format(user.receiver_string(), user_id)
+		db.query(cmd)
+		return True
+
 
 def make_pw_hash(name, pw, salt=None):
     if not salt:

@@ -41,6 +41,7 @@ CHANGE_PASSWORD = "changePassword"
 CHANGE_PASSWORD_API = "changePasswordApi"
 GENERAL_SETTINGS = "generalSettings"
 ALERT_SETTINGS = "alertSettings"
+DELETE_RECEIVER = "deleteReceiver"
 
 
 @app.route("/")
@@ -197,10 +198,26 @@ def alertSettings():
     info = UserUtils.get_user_info(db, session["user_id"])
     if request.method == 'POST':
         if form.validate():
-            if form.phone.data != "":
-
-            print form.phone.data == ""
-            print form.email.data == ""
+            if form.email.data != "":
+                UserUtils.add_receiver(db, form.email.data, session["user_id"])
+                info = UserUtils.get_user_info(db, session["user_id"])
+                return render_template(ALERT_SETTINGS + '.html',
+                    form=form,
+                    alertActive='active',
+                    settings='active',
+                    user=session['username'],
+                    message='Receiver added successfully',
+                    receivers=info.receivers)
+            else:
+                UserUtils.add_receiver(db, form.phone.data + "@" + form.carrier.data, session["user_id"])
+                info = UserUtils.get_user_info(db, session["user_id"])
+                return render_template(ALERT_SETTINGS + '.html',
+                    form=form,
+                    alertActive='active',
+                    settings='active',
+                    user=session['username'],
+                    message='Receiver added successfully',
+                    receivers=info.receivers)
     return render_template(ALERT_SETTINGS + '.html',
         form=form,
         alertActive='active',
@@ -220,7 +237,10 @@ def changePasswordApi():
         return jsonify(**{"error" : False})
     return jsonify(**{"error" : True})
 
-
+@app.route("/" + DELETE_RECEIVER, methods=['GET', 'POST'])
+def deleteReceiver():
+    UserUtils.delete_receiver(db, request.args.get('toDelete'), session['user_id'])
+    return jsonify(**{"error" : False})
 
 
 @app.route("/" + LIVE_DATA)
@@ -270,4 +290,4 @@ def test_disconnect():
     print('Client disconnected')
 
 if __name__ == "__main__":
-    socketio.run(app, host='0.0.0.0', port=8080)
+    socketio.run(app, host='0.0.0.0', port=80)
