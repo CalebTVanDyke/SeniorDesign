@@ -135,6 +135,7 @@ public class LiveDataFragment extends ApplicationFragment implements Runnable{
     public void onPause(){
         super.onPause();
         if(intervalTimer!=null)intervalTimer.removeCallbacks(this);
+        intervalTimer = null;
         if(nightMode)convertNightMode();
     }
     public boolean onOptionsItemSelected(MenuItem item) {
