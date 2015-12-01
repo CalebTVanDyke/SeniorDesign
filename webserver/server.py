@@ -134,17 +134,53 @@ def getDateTimeRange():
 
 @app.route("/" + LOAD_DATA)
 def loadData():
-    heartRate = request.args.get("heartRate")
-    blood = request.args.get("bloodOxygen")
-    temp = request.args.get("temp")
+    heartRate = float(request.args.get("heartRate"))
+    blood = float(request.args.get("bloodOxygen"))
+    temp = float(request.args.get("temp"))
     user_id = request.args.get("user_id")
     time = datetime.datetime.now()
     if heartRate == None or blood == None or temp == None:
         return jsonify(**{"error" : True})
     query = "INSERT INTO `readings` (`user_id`, `time`,`blood_oxygen`, `heart_rate`, `temp`) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}');" \
         .format(user_id, time, blood, heartRate, temp)
-    result = db.query(query)
-    return jsonify(**{"error" : False})
+    db.query(query)
+
+    result = db.query("SELECT sensitivity, avg_temp, avg_heart_rate, avg_blood_ox FROM `users` where id=" + user_id)[0]
+    sensitivity = result['sensitivity']
+    avg_blood_ox = float(result['avg_blood_ox'])
+    avg_heart_rate = float(result['avg_heart_rate'])
+    avg_temp = float(result['avg_temp'])
+    alert = False
+    if sensitivity == 'h':
+        if abs(avg_blood_ox - blood) >= 3:
+            alert = True
+        if abs(avg_temp - temp) >= 2:
+            alert = True
+        if abs(avg_heart_rate - heartRate) >= 10:
+            alert = True
+    elif sensitivity == 'm':
+        if abs(avg_blood_ox - blood) >= 5:
+            alert = True
+        if abs(avg_temp - temp) >= 3:
+            alert = True
+        if abs(avg_heart_rate - heartRate) >= 20:
+            alert = True
+    else:
+        if abs(avg_blood_ox - blood) >= 7:
+            alert = True
+        if abs(avg_temp - temp) >= 4:
+            alert = True
+        if abs(avg_heart_rate - heartRate) >= 30:
+            alert = True
+
+    # update averages
+    avg = db.query("SELECT AVG(temp) as 'avg'  FROM `readings` WHERE user_id=" + user_id)[0]['avg']
+    db.query("UPDATE `users` SET avg_temp=" + avg + " WHERE id=" + user_id)
+    avg = db.query("SELECT AVG(heart_rate) as 'avg'  FROM `readings` WHERE user_id=" + user_id)[0]['avg']
+    db.query("UPDATE `users` SET avg_heart_rate=" + avg + " WHERE id=" + user_id)
+    avg = db.query("SELECT AVG(blood_oxygen) as 'avg'  FROM `readings` WHERE user_id=" + user_id)[0]['avg']
+    db.query("UPDATE `users` SET avg_blood_ox=" + avg + " WHERE id=" + user_id)
+    return jsonify(**{"alert" : alert})
 
 @app.route("/" + CHANGE_PASSWORD, methods=['GET', 'POST'])
 def changePassword():

@@ -2,6 +2,8 @@ import serial
 import httplib
 import json
 import urllib
+import urllib2
+import json
 import random
 
 # ser = serial.Serial('COM4', 9600, timeout=1)
@@ -15,5 +17,7 @@ conn.request("GET", "loadData?user_id={0}&heartRate={1}&bloodOxygen={2}&temp={3}
 response = conn.getresponse()
 jsonStr = response.read()
 conn.close()
-print jsonStr
+alert = json.loads(jsonStr)
+if alert['alert']:
+	urllib2.urlopen("http://databasesupport.arlenburroughs.com/dec1505/alert.php?user_id='3'")
 # ser.close()
