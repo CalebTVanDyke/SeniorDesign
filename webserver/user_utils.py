@@ -65,13 +65,14 @@ class UserUtils:
 		return False
 
 	@staticmethod
-	def register(db, username, password, email, phone):
+	def register(db, username, password, email, phone, carrierEmail):
 		cmd = "SELECT username FROM `users` WHERE username=\'" + username + "\';"
 		cur = db.query(cmd)
 		if cur == None:
+			receivers = email + "," + phone + "@" + carrierEmail
 			passHash = make_pw_hash(username, password)
-			cmd = """INSERT INTO `users` (`username`, `password_hash`, `email`, `phone`) VALUES ('{0}','{1}','{2}','{3}')""" \
-				.format(username, passHash, email, phone)
+			cmd = """INSERT INTO `users` (`username`, `password_hash`, `email`, `phone`, `receivers`) VALUES ('{0}','{1}','{2}','{3}', '{4}')""" \
+				.format(username, passHash, email, phone, receivers)
 			result = db.query(cmd)
 			return True
 		else:

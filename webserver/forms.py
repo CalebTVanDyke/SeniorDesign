@@ -28,13 +28,14 @@ class RegisterForm(Form):
         validators.Required(),
         validators.Email(message="Invalid Email")])
     phone = TextField('Phone', [validators.Required()])
+    carrier = SelectField('Carrier', choices=cmap.getInputList())
 
     def validate(self, db):
         rv = Form.validate(self)
         if not rv:
             return False
         else:
-            if UserUtils.register(db, self.username.data, self.password.data, self.email.data, self.phone.data):
+            if UserUtils.register(db, self.username.data, self.password.data, self.email.data, self.phone.data, self.carrier.data):
                 return True
             else:
                 self.username.errors.append('User name is already taken. Please select another.')
