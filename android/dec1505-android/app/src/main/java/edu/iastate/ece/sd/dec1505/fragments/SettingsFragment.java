@@ -4,6 +4,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -44,10 +45,10 @@ public class SettingsFragment extends ApplicationFragment{
     public void onRequestData(RequestQueue requestQueue) {
 
         //for debugging use parseData with sampleData
-        String sampleData = "\"[{\"id\":\"3\",\"username\":\"root\",\"password_hash\":\"2cbb71e8d423aa2f5bb9923fd1098838a384ca8a6d323ce764698af5249bf721,pmPga\",\"email\":\"root@root.com\",\"phone\":\"5153217935\",\"avg_blood_ox\":\"0\",\"avg_heart_rate\":\"0\",\"avg_temp\":\"0\",\"sensitivity\":\"m\"}]\"";
-        parseData(sampleData);
+        //String sampleData = "\"[{\"id\":\"3\",\"username\":\"root\",\"password_hash\":\"2cbb71e8d423aa2f5bb9923fd1098838a384ca8a6d323ce764698af5249bf721,pmPga\",\"email\":\"root@root.com\",\"phone\":\"5153217935\",\"avg_blood_ox\":\"0\",\"avg_heart_rate\":\"0\",\"avg_temp\":\"0\",\"sensitivity\":\"m\"}]\"";
+        //parseData(sampleData);
 
-        //requestQueue.add(getDataRequest());
+        requestQueue.add(getDataRequest());
     }
 
     @Override
@@ -98,6 +99,7 @@ public class SettingsFragment extends ApplicationFragment{
 
     private void parseData(String data){
         Log.i("Settings data",data);
-
+        TextView tv = (TextView)findViewById(R.id.home_text_view);
+        tv.setText(data);
     }
 }
