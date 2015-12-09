@@ -2,7 +2,10 @@
 {% block scripts %}
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='Chart.min.js') }}"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script>
+
+google.load('visualization', '1', {'packages':['corechart', 'annotationchart']});
 $(document).ready(function(){
 
     //Set up web socket communication
@@ -12,102 +15,112 @@ $(document).ready(function(){
         socket.emit('my event', {data: 'I\'m connected!'});
     });
 
+    function loadData() {
+        console.log("load data called")
+        $.ajax({
+            url: "{{url_for('lastTen')}}",
+            success: function(result) {
+                drawChart(result)
+            }
+        })
+    }
+
     {% if 'chart' in request.args and request.args.get('chart') == 'oxygen' %}
-        //Set up blood oxygen saturation chart
-        var oxygenCount = 0;
-        var data = {
-            labels: [],
-            datasets: [
-                {
-                    label: "Blood Oxygen Level",
-                    fillColor: "rgba(151,187,205,0)",
-                    strokeColor: "rgba(151,187,205,1)",
-                    pointColor: "rgba(151,187,205,1)",
-                    pointStrokeColor: "#fff",
-                    pointHighlightFill: "#fff",
-                    pointHighlightStroke: "rgba(151,187,205,1)",
-                    data: []
-                }
-            ]
-        };
+         function drawChart(results) {
+            $(".progress").hide()
+            var oxygen = new google.visualization.DataTable();
+            oxygen.addColumn('datetime', 'Time')
+            oxygen.addColumn('number', 'Blood Oxygen Saturation')
+            oxygenData = results['blood_oxygen'];
 
-        var octx = $('#oxygen-chart').get(0).getContext('2d')
-        var oxChart = new Chart(octx).Line(data, {
-            scaleBeginAtZero: true,
-        });
-
-            //Set up oxygen chart web socket communication
-        socket.on('oxygen', function(msg){
-            if(msg['num'] != undefined){
-                var d = new Date();
-                var hours = d.getHours();
-                var ampm = hours >= 12 ? 'pm' : 'am';
-                if(hours > 12){
-                    hours = hours % 12;
-                }
-                var minutes = d.getMinutes();
-                minutes = minutes < 10 ? '0' + minutes : minutes
-                var seconds = d.getSeconds();
-                seconds = seconds < 10 ? '0' + seconds : seconds
-                var time = hours + ":" + minutes + "." + seconds + " " + ampm;
-                oxChart.addData([msg['num']], time);
-                if(oxygenCount >= 10){
-                    oxChart.removeData();
-                }else{
-                    oxygenCount++;
-                }
-                oxChart.update();
+            for (var i = 0; i < oxygenData.length; i++) {
+                data = parseFloat(oxygenData[i]['blood_oxygen'])
+                time = new Date(oxygenData[i]['time'])
+                oxygen.addRow([time, data])
             }
-        });
 
+            var bloodOptions = {'title':'Blood Oxygen Saturation',
+                pointSize: 1,
+                width: 900,
+                height: 200,
+                vAxis: {
+                    'maxValue' : 100,
+                    'minValue' : 0
+                },
+                colors: ['#2E9AFE'],
+                hAxis: {
+                    gridlines: {
+                        count: -1,
+                        units: {
+                            days: {format: ['MMM dd']},
+                            hours: {format: ['hh:mm a', 'ha']},
+                        }
+                    },
+                    minorGridlines: {
+                        units: {
+                            hours: {format: ['hh:mm:ss a', 'ha']},
+                            minutes: {format: ['hh:mm a', ':mm']}
+                        }
+                    }
+                }
+            };
+
+            var formatter = new google.visualization.DateFormat({formatType: 'medium'});
+            formatter.format(oxygen, 0)
+            var bloodChart = new google.visualization.LineChart(document.getElementById('blood_chart'))
+            bloodChart.draw(oxygen, bloodOptions);
+        }
     {% else %}
-        //Set up heart rate chart
-        var heartCount = 0;
-        var data = {
-            labels: [],
-            datasets: [
-                {
-                    label: "Blood Oxygen Level",
-                    fillColor: "rgba(151,187,205,0)",
-                    strokeColor: "rgb(208, 155, 155)",
-                    pointColor: "rgb(208, 155, 155)",
-                    pointStrokeColor: "#fff",
-                    pointHighlightFill: "#fff",
-                    pointHighlightStroke: "rgb(208, 155, 155)",
-                    data: []
-                }
-            ]
-        };
+        function drawChart(results) {
+            $(".progress").hide()
+            var heartRate = new google.visualization.DataTable();
+            heartRate.addColumn('datetime', 'Time')
+            heartRate.addColumn('number', 'Heart Rate')
 
-        var hctx = $('#heart-chart').get(0).getContext('2d')
-        var hChart = new Chart(hctx).Line(data, {
-            scaleBeginAtZero: true
-        });
+            heartData = results['heart_rate'];
 
-        //Set up heart chart web socket communication
-        socket.on('heart', function(msg){
-            if(msg['num'] != undefined){
-                var d = new Date();
-                var hours = d.getHours();
-                var ampm = hours >= 12 ? 'pm' : 'am';
-                if(hours > 12){
-                    hours = hours % 12;
-                }
-                var minutes = d.getMinutes();
-                minutes = minutes < 10 ? '0' + minutes : minutes
-                var seconds = d.getSeconds();
-                seconds = seconds < 10 ? '0' + seconds : seconds
-                var time = hours + ":" + minutes + "." + seconds + " " + ampm;
-                hChart.addData([msg['num']], time);
-                if(heartCount >= 10){
-                    hChart.removeData();
-                }else{
-                    heartCount++;
-                }
-                hChart.update();
+            for (var i = 0; i < heartData.length; i++) {
+                data = parseFloat(heartData[i]['heart_rate'])
+                time = new Date(heartData[i]['time'])
+                heartRate.addRow([time, data])
             }
-        });
+
+            var heartOptions = {'title':'Heart Rate',
+                'pointSize': 1,
+                'width' : 900,
+                'height' : 200,
+                'vAxis': {
+                    'maxValue' : 150,
+                    'minValue' : 0
+                },
+                'colors' : ['#B40404'],
+                hAxis: {
+                    gridlines: {
+                        count: -1,
+                        units: {
+                            days: {format: ['MMM dd']},
+                            hours: {format: ['hh:mm a', 'ha']},
+                        }
+                    },
+                    minorGridlines: {
+                        units: {
+                            hours: {format: ['hh:mm:ss a', 'ha']},
+                            minutes: {format: ['hh:mm a', ':mm']}
+                        }
+                    }
+                }
+            };
+
+            var formatter = new google.visualization.DateFormat({formatType: 'medium'});
+            formatter.format(heartRate, 0)
+            var heartChart = new google.visualization.LineChart(document.getElementById('heart_chart'))
+            heartChart.draw(heartRate, heartOptions);
+        }
     {% endif %}
+    setInterval(function() {
+        loadData()
+    }, 5000);
+    loadData()
 });
 </script>
 {% endblock %}
@@ -119,10 +132,10 @@ $(document).ready(function(){
     </ul>
     {% if 'chart' in request.args and request.args.get('chart') == 'oxygen' %}
         <h3>Blood Oxygen Saturation</h3>
-        <canvas id="oxygen-chart" width="600" height="300"></canvas>
+        <div id="blood_chart" style="width: 900px; height: 200px;"></div>
     {% else %}
         <h3>Heart Rate</h3>
-        <canvas id="heart-chart" width="600" height="300"></canvas>
+        <div id="heart_chart" style="width: 900px; height: 200px;"></div>
     {% endif %}
 
 {% endblock %}

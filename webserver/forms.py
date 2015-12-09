@@ -66,6 +66,7 @@ class GeneralSettingForm(Form):
         validators.Required(),
         validators.Email(message="Invalid Email")])
     primary_phone = TextField('Primary Phone', [validators.Required()])
+    sensitivity = SelectField('Sensitivity', choices=[('l', 'Low'), ('m', 'Medium'), ('h', 'High')])
 
     def validate(self, db):
         rv = Form.validate(self)

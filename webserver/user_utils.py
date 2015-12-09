@@ -9,8 +9,9 @@ cmap = CarrierMap()
 
 class User:
 	"""All of the info for a user.  receivers is in a coma seperated string"""
-	def __init__(self, username, primary_phone, primary_email, receivers):
+	def __init__(self, username, primary_phone, primary_email, receivers, sensitivity):
 		self.username = username
+		self.sensitivity = sensitivity
 		self.primary_phone = primary_phone
 		self.primary_email = primary_email
 		splitRec = receivers.split(",")
@@ -94,7 +95,7 @@ class UserUtils:
 
 	@staticmethod
 	def get_user_info(db, user_id):
-		cmd = "SELECT username, phone, email, receivers FROM `users` WHERE id=\'{0}\';".format(user_id)
+		cmd = "SELECT username, phone, email, receivers, sensitivity FROM `users` WHERE id=\'{0}\';".format(user_id)
 		result = db.query(cmd)
 		if result == None:
 			return None
@@ -102,11 +103,13 @@ class UserUtils:
 		primary_email = result[0]['email']
 		primary_phone = result[0]['phone']
 		receivers = result[0]['receivers']
-		return User(username, primary_phone, primary_email, receivers)
+		sensitivity = result[0]['sensitivity']
+		return User(username, primary_phone, primary_email, receivers, sensitivity)
 
 	@staticmethod
-	def save_user_info(db, user_id, primary_phone, primary_email):
-		cmd = "UPDATE `users` SET `phone`='{0}', email='{1}' WHERE id={2};".format(primary_phone, primary_email, user_id)
+	def save_user_info(db, user_id, primary_phone, primary_email, sensitivity):
+		cmd = "UPDATE `users` SET `phone`='{0}', email='{1}', sensitivity='{2}' WHERE id={3};".format(primary_phone, primary_email, sensitivity, user_id)
+		print cmd
 		db.query(cmd)
 		return True
 

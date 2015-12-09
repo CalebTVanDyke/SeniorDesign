@@ -42,6 +42,7 @@ CHANGE_PASSWORD_API = "changePasswordApi"
 GENERAL_SETTINGS = "generalSettings"
 ALERT_SETTINGS = "alertSettings"
 DELETE_RECEIVER = "deleteReceiver"
+LAST_TEN_POINTS = "lastTen"
 
 
 @app.route("/")
@@ -132,6 +133,11 @@ def getDateTimeRange():
         request.args.get('endDateTime'), user_id,  int(request.args.get('dataGap')))
     return jsonify(**myDict)
 
+@app.route("/" + LAST_TEN_POINTS)
+def lastTen():
+    myDict = DateUtils.GetLastTen(db, session['user_id'])
+    return jsonify(**myDict)
+
 @app.route("/" + LOAD_DATA)
 def loadData():
     heartRate = float(request.args.get("heartRate"))
@@ -204,7 +210,7 @@ def generalSettings():
     form = GeneralSettingForm(request.form)
     if request.method == 'POST':
         if form.validate(db):
-            UserUtils.save_user_info(db, session['user_id'], form.primary_phone.data, form.primary_email.data)
+            UserUtils.save_user_info(db, session['user_id'], form.primary_phone.data, form.primary_email.data, form.sensitivity.data)
             return render_template(GENERAL_SETTINGS + '.html',
                 form=form,
                 generalActive='active',
@@ -221,6 +227,7 @@ def generalSettings():
     info = UserUtils.get_user_info(db, session["user_id"])
     form.primary_email.data = info.primary_email
     form.primary_phone.data = info.primary_phone
+    form.sensitivity.data = info.sensitivity
     return render_template(GENERAL_SETTINGS + '.html',
         form=form,
         generalActive='active',
@@ -277,7 +284,6 @@ def changePasswordApi():
 def deleteReceiver():
     UserUtils.delete_receiver(db, request.args.get('toDelete'), session['user_id'])
     return jsonify(**{"error" : False})
-
 
 @app.route("/" + LIVE_DATA)
 def liveData():

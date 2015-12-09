@@ -33,9 +33,14 @@ class DateUtils:
 		dateRangeNoData = 'No data was found for date range: {0} to {1}.'
 		cmd = "SELECT * FROM `readings` WHERE time >= '{0}' AND time <= '{1}' " \
 					"AND user_id={2} ORDER BY time asc".format(startDateTime, endDateTime, user_id)
-		print cmd
 		result = db.query(cmd)
 		return applyDataFrequency(result, dataGap)
+
+	@staticmethod
+	def GetLastTen(db, user_id):
+		cmd = "SELECT * FROM `readings` WHERE user_id={0} ORDER BY time desc LIMIT 10;".format(user_id)
+		result = db.query(cmd)
+		return applyDataFrequency(result, 0)
 		
 def applyDataFrequency(result, dataGap):
 	lastTime = 0
@@ -46,7 +51,8 @@ def applyDataFrequency(result, dataGap):
 		return {'heart_rate' : heartRate, 'temp' : temp, 'blood_oxygen' : bloodOxygen}
 	for item in result:
 		dt = time.mktime(datetime.datetime.strptime(item['time'], "%Y-%m-%d %H:%M:%S").timetuple())
-		if lastTime == 0 or dt - lastTime >= dataGap:
+		diff = abs(dt - lastTime)
+		if lastTime == 0 or diff >= dataGap:
 			heartRate.append({'time': item['time'], 'heart_rate': item['heart_rate']})
 			temp.append({'time': item['time'], 'temp': item['temp']})
 			bloodOxygen.append({'time': item['time'], 'blood_oxygen': item['blood_oxygen']})
