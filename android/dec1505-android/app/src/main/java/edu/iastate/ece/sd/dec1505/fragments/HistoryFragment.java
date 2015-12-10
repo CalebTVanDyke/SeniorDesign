@@ -36,6 +36,7 @@ import java.util.Date;
 import edu.iastate.ece.sd.dec1505.R;
 import edu.iastate.ece.sd.dec1505.models.Reading;
 import edu.iastate.ece.sd.dec1505.tools.DefaultRequestQueue;
+import edu.iastate.ece.sd.dec1505.tools.Prefs;
 import edu.iastate.ece.sd.dec1505.views.HistoryItemView;
 import edu.iastate.ece.sd.dec1505.views.ListHeaderView;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
@@ -43,7 +44,7 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 public class HistoryFragment extends ApplicationFragment implements Runnable{
 
-    int userId;
+    String userId;
     final String BASE_DATA_URL =  "http://cvandyke.ddns.net/getDateTimeRange?";
 
     final String DEBUG_URL = "http://cvandyke.ddns.net/getDateTimeRange?startDateTime=2015-08-01%2021:30:00&endDateTime=2015-08-08%2007:00:00&user_id=3&dataGap=3600";
@@ -91,7 +92,7 @@ public class HistoryFragment extends ApplicationFragment implements Runnable{
     public void onInitialSetup(){
 
         //hard coded for debugging
-        userId= 3;
+        userId= Prefs.getUserID(getContext());
 
         timeFormat = twelveHrFormat;//12 hour format
         if(DateFormat.is24HourFormat(getActivity())) timeFormat = twntyFourHrFrmt;//24 hour format
