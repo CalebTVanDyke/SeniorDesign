@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusableInTouchMode="true"
+    android:background="@color/background">
+
+    <TextView
+        android:id="@+id/username_setting_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/username_field"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:text="Username"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <EditText
+        android:id="@+id/username_field"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/padding_medium"
+        android:gravity="center"
+        android:layout_above="@+id/password_setting_textview"
+        android:layout_centerHorizontal="true"
+        android:ems="10"
+        android:imeOptions="actionNext"
+        android:singleLine="true"
+        android:textColor="@color/primary_color" />
+
+    <TextView
+        android:id="@+id/password_setting_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/password_field"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:text="Password"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Button
+        android:id="@+id/password_field"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/phone_setting_textview"
+        android:layout_marginBottom="@dimen/padding_medium"
+        android:layout_centerHorizontal="true"
+        android:ems="10"
+        android:text="Change Password"
+        android:imeOptions="actionNext"
+        android:singleLine="true"
+        android:textColor="@color/primary_color" />
+
+    <TextView
+        android:id="@+id/phone_setting_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:text="Phone"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <EditText
+        android:id="@+id/phone_field"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/phone_setting_textview"
+        android:layout_marginBottom="@dimen/padding_medium"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:ems="10"
+        android:imeOptions="actionNext"
+        android:singleLine="true"
+        android:textColor="@color/primary_color" />
+
+    <TextView
+        android:id="@+id/receivers_setting_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/phone_field"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:text="Alert Recipients"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <EditText
+        android:id="@+id/receivers_field"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_below="@+id/receivers_setting_textview"
+        android:layout_marginBottom="@dimen/padding_medium"
+        android:layout_centerHorizontal="true"
+        android:ems="10"
+        android:imeOptions="actionNext"
+        android:textColor="@color/primary_color" />
+
+    <TextView
+        android:id="@+id/sensativity_setting_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/receivers_field"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:text="Device Sensativity"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <EditText
+        android:id="@+id/sensativity_field"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_below="@+id/sensativity_setting_textview"
+        android:layout_centerHorizontal="true"
+        android:ems="10"
+        android:imeOptions="actionNext"
+        android:textColor="@color/primary_color" />
+
+    <Button
+        android:id="@+id/update_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:text="Save Settings"
+        android:imeOptions="actionNext"
+        android:singleLine="true"
+        android:textColor="@color/primary_color"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"/>
+
+</RelativeLayout>
+

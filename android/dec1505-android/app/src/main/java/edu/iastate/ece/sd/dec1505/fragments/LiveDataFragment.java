@@ -44,7 +44,8 @@ public class LiveDataFragment extends ApplicationFragment implements Runnable{
 
     String BASE_DATA_URL = "http://databasesupport.arlenburroughs.com/492_db_query.php?query=";
     String SETTINGS_SQL1 =  "Select * from `readings` where `user_id` = ";
-    String SETTINGS_SQL2 =  " ORDER BY `id` DESC LIMIT 1";
+    String SETTINGS_SQL2 =  " ORDER BY `id` DESC LIMIT 100";
+    int current = 0;
     String url;
 
 
@@ -166,7 +167,8 @@ public class LiveDataFragment extends ApplicationFragment implements Runnable{
         double temp = -1;
         try {
             JSONArray jArr = new JSONArray(data);
-            JSONObject jObj = jArr.getJSONObject(0);
+            JSONObject jObj = jArr.getJSONObject(current);
+            current ++;
             heartRate = jObj.getInt("heart_rate");
             bloodOx = jObj.getInt("blood_oxygen");
         } catch (JSONException e) {e.printStackTrace();}

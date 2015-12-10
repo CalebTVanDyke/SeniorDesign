@@ -4,6 +4,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -12,6 +13,10 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import edu.iastate.ece.sd.dec1505.R;
 import edu.iastate.ece.sd.dec1505.tools.Prefs;
@@ -27,7 +32,7 @@ public class SettingsFragment extends ApplicationFragment{
 
     @Override
     public int getRootViewId() {//TODO
-        return R.layout.fragment_home;
+        return R.layout.fragment_settings;
     }
 
     @Override
@@ -99,7 +104,24 @@ public class SettingsFragment extends ApplicationFragment{
 
     private void parseData(String data){
         Log.i("Settings data",data);
-        TextView tv = (TextView)findViewById(R.id.home_text_view);
-        tv.setText(data);
+
+        String usrname = "", phone = "", receivers = "",sensativity = "";
+        try {
+            JSONArray jArr = new JSONArray(data);
+            JSONObject jObj = jArr.getJSONObject(0);
+            usrname = jObj.getString("username");
+            phone = jObj.getString("phone");
+            sensativity = jObj.getString("sensitivity");
+            receivers = jObj.getString("receivers");
+        } catch (JSONException e) {e.printStackTrace();}
+
+        EditText tv = (EditText) findViewById(R.id.username_field);
+        tv.setText(usrname);
+        tv = (EditText) findViewById(R.id.phone_field);
+        tv.setText(phone);
+        tv = (EditText) findViewById(R.id.receivers_field);
+        tv.setText(receivers);
+        tv = (EditText) findViewById(R.id.sensativity_field);
+        tv.setText(sensativity);
     }
 }
