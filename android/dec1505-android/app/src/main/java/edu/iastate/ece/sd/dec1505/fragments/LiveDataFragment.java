@@ -161,14 +161,14 @@ public class LiveDataFragment extends ApplicationFragment implements Runnable{
         Log.d("Data","Data Received: "+data);
 
 
-        double heartRate = -1;
-        double bloodOx = -1;
+        int heartRate = -1;
+        int bloodOx = -1;
         double temp = -1;
         try {
             JSONArray jArr = new JSONArray(data);
             JSONObject jObj = jArr.getJSONObject(0);
-            heartRate = jObj.getDouble("heart_rate");
-            bloodOx = jObj.getDouble("blood_oxygen");
+            heartRate = jObj.getInt("heart_rate");
+            bloodOx = jObj.getInt("blood_oxygen");
         } catch (JSONException e) {e.printStackTrace();}
 
         if(testingAlert){
@@ -181,7 +181,7 @@ public class LiveDataFragment extends ApplicationFragment implements Runnable{
         renewDataTimer();
     }
 
-    private void updateViews(double heartRate, double bloodOx, double temp){
+    private void updateViews(int heartRate, int bloodOx, double temp){
         String heartRateStr = ""+heartRate;
         DecimalFormat df2 = new DecimalFormat("00.0");
         while(heartRateStr.length()<3)heartRateStr="\u0020"+" "+heartRateStr;
