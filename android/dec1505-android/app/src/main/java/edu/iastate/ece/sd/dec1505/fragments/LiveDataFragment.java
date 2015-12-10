@@ -23,6 +23,7 @@ import com.android.volley.toolbox.StringRequest;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -32,6 +33,7 @@ import java.text.DecimalFormat;
 
 import edu.iastate.ece.sd.dec1505.R;
 import edu.iastate.ece.sd.dec1505.tools.DefaultRequestQueue;
+import edu.iastate.ece.sd.dec1505.tools.Prefs;
 
 public class LiveDataFragment extends ApplicationFragment implements Runnable{
 
@@ -39,8 +41,12 @@ public class LiveDataFragment extends ApplicationFragment implements Runnable{
     TextView heartRateView;
     TextView tempView;
     String WEB_SOCKET_ADDRESS = "";
-    String TEST_DATA_URL =  "http://dec1505.sd.ece.iastate.edu/assets/php/rand_data_test.php";
-    String ALERT_URL =      "http://arlenburroughs.com/extras/php_jobs/alert.php";
+
+    String BASE_DATA_URL = "http://databasesupport.arlenburroughs.com/492_db_query.php?query=";
+    String SETTINGS_SQL1 =  "Select * from `readings` where `user_id` = ";
+    String SETTINGS_SQL2 =  " ORDER BY `id` DESC LIMIT 1";
+    String url;
+
 
     Handler intervalTimer;
     int INTERVAL_TIME = 2000;
@@ -100,12 +106,12 @@ public class LiveDataFragment extends ApplicationFragment implements Runnable{
 
     @Override
     public void onInitialSetup(){
-        //connectWebSocket();
+        url =  (BASE_DATA_URL+SETTINGS_SQL1+ Prefs.getUserID(getContext())+SETTINGS_SQL2).replace(' ','+');
     }
 
     @Override
     public void onRequestData(RequestQueue requestQueue){
-        requestQueue.add(new StringRequest(TEST_DATA_URL,
+        requestQueue.add(new StringRequest(url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String data) {
@@ -115,7 +121,7 @@ public class LiveDataFragment extends ApplicationFragment implements Runnable{
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
-                        Log.e("Data", "Data Fetch Error: "+volleyError.toString());
+                        Log.e("Data", "Data Fetch Error: " + volleyError.toString());
                     }
                 }
         ));
@@ -154,14 +160,15 @@ public class LiveDataFragment extends ApplicationFragment implements Runnable{
     private void parseData(String data){
         Log.d("Data","Data Received: "+data);
 
+
         int heartRate = -1;
         int bloodOx = -1;
         double temp = -1;
         try {
-            JSONObject jObj = new JSONObject(data);
-            heartRate = jObj.getInt("heart");
-            bloodOx = jObj.getInt("spo2");
-            temp = jObj.getDouble("temp");
+            JSONArray jArr = new JSONArray(data);
+            JSONObject jObj = jArr.getJSONObject(0);
+            heartRate = jObj.getInt("heart_rate");
+            bloodOx = jObj.getInt("blood_oxygen");
         } catch (JSONException e) {e.printStackTrace();}
 
         if(testingAlert){
@@ -169,15 +176,9 @@ public class LiveDataFragment extends ApplicationFragment implements Runnable{
             bloodOx=0;
             temp = 72.5;
         }
-        detectDanger(heartRate, bloodOx, temp);
         updateViews(heartRate, bloodOx, temp);
 
         renewDataTimer();
-    }
-
-    private void detectDanger(int heartRate, int bloodOx, double temp){
-        if(heartRate<40 || bloodOx < 60 || temp < 90)
-            issueAlert();
     }
 
     private void updateViews(int heartRate, int bloodOx, double temp){
@@ -186,35 +187,13 @@ public class LiveDataFragment extends ApplicationFragment implements Runnable{
         while(heartRateStr.length()<3)heartRateStr="\u0020"+" "+heartRateStr;
         heartRateView.setText(heartRateStr+" bpm");
         bloodOxView.setText(bloodOx+"%");
-        tempView.setText(df2.format(temp)+"°F");
+        //tempView.setText(df2.format(temp) + "°F");
     }
 
     private void renewDataTimer(){
         if(intervalTimer==null)intervalTimer = new Handler();
         else intervalTimer.removeCallbacks(this);
         intervalTimer.postDelayed(this, INTERVAL_TIME);
-    }
-
-    private void issueAlert(){
-        if(alertSent)return;
-        String contact = "5152973801@mms.uscc.net";
-
-        RequestQueue requestQueue = DefaultRequestQueue.getDefaultQueue(getContext());
-        requestQueue.add(new StringRequest(ALERT_URL,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String data) {
-                        Log.d("Data", "Alert data back: " + data);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        Log.e("Data", "Data Fetch Error: "+volleyError.toString());
-                    }
-                }
-        ));
-        alertSent = true;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
